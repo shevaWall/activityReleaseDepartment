@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PrintableObjectController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('/', function () {
-    return view('welcome');
+    return view('index');
+})->name('index');
+
+Route::group([
+//    'middleware'=>  '',
+    'prefix'    =>  'objects',
+    'as'        =>  'objects.',
+], function(){
+    Route::get("/", [PrintableObjectController::class, "index"])
+        ->name('index');
+
+    Route::get("add", [PrintableObjectController::class, "addNewObjectForm"])
+        ->name('show_form');
+    Route::post("add", [PrintableObjectController::class, "addNewObjectSubmit"])
+        ->name('submit_form');
 });
+
+Route::group([
+//    'middleware'=>  '',
+    'prefix'    =>  'settings',
+    'as'        =>  'settings.',
+], function(){
+    Route::get("/", [SettingsController::class, "index"]);
+});
+
