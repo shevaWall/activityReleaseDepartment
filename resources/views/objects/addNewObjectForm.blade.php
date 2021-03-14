@@ -65,6 +65,13 @@
                 </div>
             </div>
 
+            <div class="row mb-3">
+                <label for="inputDeadline" class="col-sm-2 col-form-label">Срок сдачи</label>
+                <div class="col-sm-10">
+                    <input type="date" class="form-control" id="inputDeadline" name="deadline">
+                </div>
+            </div>
+
 
             <button type="submit" class="btn btn-primary">Добавить</button>
         </form>

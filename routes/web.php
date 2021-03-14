@@ -19,6 +19,9 @@ Route::get('/', function () {
     return view('index');
 })->name('index');
 
+/**
+ * роуты для работы с объектами
+ */
 Route::group([
 //    'middleware'=>  '',
     'prefix'    =>  'objects',

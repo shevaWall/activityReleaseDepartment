@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PrintableObject;
+use App\Models\Status;
 use Illuminate\Http\Request;
 
 class PrintableObjectController extends Controller
@@ -11,8 +12,10 @@ class PrintableObjectController extends Controller
      * отображение списка всех объектов
      */
     public function index(){
+        $objects = PrintableObject::where('status_id', 1)->with('status')->get();
+
         return view('objects.index')
-            ->with('objects', PrintableObject::all())
+            ->with('objects', $objects)
             ;
     }
 
@@ -27,13 +30,15 @@ class PrintableObjectController extends Controller
     /**
      * обработчик добавления нового объекта
      * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function addNewObjectSubmit(Request $request){
-        dump($request);
+        /*
+         * todo: добавить свой валидатор Request и загрузку файлов
+         * как минимум проверка на уникальность связки полей "название" и "шифр". И если идентичные уже есть - не позволять создавать
+         * */
 
-//        todo: добавить свой валидатор Request и загрузку файлов
-
-        $newObject = PrintableObject::create([
+        PrintableObject::create([
             'name'              =>  $request->name,
             'cipher'            =>  $request->cipher,
             'scan_img'          =>  $request->scan_img,
@@ -41,10 +46,11 @@ class PrintableObjectController extends Controller
             'count_pd'          =>  $request->count_pd,
             'count_rd'          =>  $request->count_rd,
             'count_ii'          =>  $request->count_ii,
-            'status_id'         =>  '1',
+            'status_id'         =>  '1', // подефолту закидываем в 1, т.к. в планах Состояния: 1) в работе; 2) сдан; 3) на паузе; 4) удалён
             'original_documents'=>  (!isset($request->original_documents)) ? '0' : '1',
+            'deadline'          =>  $request->deadline,
         ]);
 
-        dump($newObject);
+        return redirect()->route('objects.index');
     }
 }
