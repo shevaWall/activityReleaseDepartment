@@ -33,11 +33,11 @@ Route::group([
         ->name('submit_form');
 });
 
-Route::group([
+/*Route::group([
 //    'middleware'=>  '',
     'prefix'    =>  'settings',
     'as'        =>  'settings.',
 ], function(){
     Route::get("/", [SettingsController::class, "index"]);
-});
+});*/
 

@@ -12,9 +12,9 @@
                 <li class="nav-item">
                     <a class="nav-link {{request()->routeIs('objects.index') ? 'active' : ''}}" aria-current="page" href="{{route('objects.index')}}">Объекты</a>
                 </li>
-                <li class="nav-item">
+                {{--<li class="nav-item">
                     <a class="nav-link {{request()->routeIs('settings.index') ? 'active' : ''}}" aria-current="page" href="{{route('settings.index')}}">Настройки</a>
-                </li>
+                </li>--}}
             </ul>
             <form class="d-flex">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
