@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CompositGroup;
 use App\Models\PrintableObject;
 use App\Models\Status;
 use Illuminate\Http\Request;
@@ -11,46 +12,104 @@ class PrintableObjectController extends Controller
     /**
      * отображение списка всех объектов
      */
-    public function index(){
-        $objects = PrintableObject::where('status_id', 1)->with('status')->get();
-
+    public function index()
+    {
         return view('objects.index')
-            ->with('objects', $objects)
-            ;
+            ->with('objects', PrintableObject::where('status_id', 1)->with('status')->get());
     }
 
     /**
      * Отображение формы для добавления нового объекта
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function addNewObjectForm(){
+    public function addNewObjectForm()
+    {
         return view('objects.addNewObjectForm');
     }
 
     /**
-     * обработчик добавления нового объекта
+     * обработчик добавления/изменения объекта
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function addNewObjectSubmit(Request $request){
+    public function addNewObjectSubmit(Request $request)
+    {
         /*
          * todo: добавить свой валидатор Request и загрузку файлов
          * как минимум проверка на уникальность связки полей "название" и "шифр". И если идентичные уже есть - не позволять создавать
          * */
 
-        PrintableObject::create([
-            'name'              =>  $request->name,
-            'cipher'            =>  $request->cipher,
-            'scan_img'          =>  $request->scan_img,
-            'object_owner'      =>  $request->object_owner,
-            'count_pd'          =>  $request->count_pd,
-            'count_rd'          =>  $request->count_rd,
-            'count_ii'          =>  $request->count_ii,
-            'status_id'         =>  '1', // подефолту закидываем в 1, т.к. в планах Состояния: 1) в работе; 2) сдан; 3) на паузе; 4) удалён
-            'original_documents'=>  (!isset($request->original_documents)) ? '0' : '1',
-            'deadline'          =>  $request->deadline,
-        ]);
+        if (is_null($request->id)) {
+            $req = $request->all();
+            $req['status_id'] = 1;
+            PrintableObject::create($req);
+        } else {
+            $req = $request->all();
+            $req['original_documents'] = (!isset($req['original_documents'])) ? 0 : 1;
+            PrintableObject::findOrFail($request->id)->update($req);
+        }
 
         return redirect()->route('objects.index');
+    }
+
+    /**
+     * изменение статуса объекта на "удалён
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function StatusDeletedObject(int $id)
+    {
+        PrintableObject::findOrFail($id)->update(['status_id' => 4]);
+
+        return redirect()->route('objects.index');
+    }
+
+    /**
+     * отображение настроек объекта
+     * @param int $id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function showObjectSettings(int $id)
+    {
+//        todo: при редактировании уже существующего объекта в настройках должен быть выбор изменения статуса объекта (status_id)
+        return view('objects.showObjectSettings')
+            ->with('object', PrintableObject::findOrFail($id));
+    }
+
+    /**
+     * отображение списка удалённых объектов
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function deletedObjects()
+    {
+        return view('objects.index')
+            ->with('objects', PrintableObject::where('status_id', 4)->with('status')->get());
+    }
+
+    /**
+     * восстанавливает удалённый объект
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restoreObject(int $id)
+    {
+        PrintableObject::findOrFail($id)->update(
+            [
+                'status_id' => 1
+            ]
+        );
+
+        return redirect()->route('objects.deleted');
+    }
+
+    /**
+     * навсегда удаляет объект из БД
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function removeObject(int $id)
+    {
+        PrintableObject::findOrFail($id)->delete();
+        return redirect()->route('objects.deleted');
     }
 }

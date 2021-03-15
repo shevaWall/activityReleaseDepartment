@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CompositController;
 use App\Http\Controllers\PrintableObjectController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,33 @@ Route::group([
         ->name('show_form');
     Route::post("add", [PrintableObjectController::class, "addNewObjectSubmit"])
         ->name('submit_form');
+
+    Route::get('delete/{id}', [PrintableObjectController::class, "StatusDeletedObject"])
+        ->name('deleteObject');
+
+    Route::get("edit/{id}", [PrintableObjectController::class, "showObjectSettings"])
+        ->name('showObjectSettings');
+
+    Route::get("deleted", [PrintableObjectController::class, "deletedObjects"])
+            ->name('deleted');
+
+    Route::get("restore/{id}", [PrintableObjectController::class, "restoreObject"])
+            ->name('restoreObject');
+    Route::get("remove/{id}", [PrintableObjectController::class, "removeObject"])
+            ->name('removeObject');
+
+
+    Route::get("composit/{object_id}", [CompositController::class, "index"])
+            ->name('composit');
+});
+
+Route::group([
+//    'middleware'=>  '',
+    'prefix'    =>  'composit',
+    'as'        =>  'composit.',
+], function(){
+        Route::get("updateStatus/{id}", [CompositController::class, "updateStatus"])
+                ->name('updateStatus');
 });
 
 /*Route::group([

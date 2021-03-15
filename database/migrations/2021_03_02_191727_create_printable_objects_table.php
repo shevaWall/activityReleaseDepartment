@@ -19,11 +19,11 @@ class CreatePrintableObjectsTable extends Migration
             $table->string('cipher')->nullable();
             $table->string('scan_img')->nullable();
             $table->string('object_owner')->nullable();
-            $table->unsignedInteger('status_id');
+            $table->unsignedInteger('status_id')->default('1');
             $table->unsignedInteger('count_pd')->nullable();
             $table->unsignedInteger('count_rd')->nullable();
             $table->unsignedInteger('count_ii')->nullable();
-            $table->boolean('original_documents');
+            $table->boolean('original_documents')->nullable()->default(false);
             $table->timestamps();
         });
     }
