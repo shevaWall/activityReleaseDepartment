@@ -62,6 +62,9 @@ Route::group([
 ], function(){
         Route::get("updateStatus/{id}", [CompositController::class, "updateStatus"])
                 ->name('updateStatus');
+
+        Route::post("ajaxAddComposit", [CompositController::class, "ajaxAddComposit"])
+                ->name('ajaxAddComposit');
 });
 
 /*Route::group([

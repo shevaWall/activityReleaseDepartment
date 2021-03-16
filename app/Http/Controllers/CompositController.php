@@ -16,7 +16,6 @@ class CompositController extends Controller
     public function index(int $object_id){
         $printableObject = PrintableObject::findOrFail($object_id);
         $composits = Composit::where('object_id', $object_id)->with('printableObject')->get();
-        dump($composits);
         return view('composit.index')
             ->with(
                 [
@@ -26,9 +25,33 @@ class CompositController extends Controller
             );
     }
 
+    /**
+     * обновление статуса раздела
+     * @param int $composit_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function updateStatus(int $composit_id){
         Composit::findOrFail($composit_id)->changeStatus();
+//        todo: сделать ajax
 
-//        return redirect()->back();
+        return redirect()->back();
+    }
+
+    /**
+     * ajax добавление раздела
+     * @param Request $request
+     */
+    public function ajaxAddComposit(Request $request){
+        $req = $request->all();
+        $req['completed'] = 0;
+        Composit::create($req);
+        $this->refreshComposit();
+    }
+
+    /**
+     * обновление состава после ajax добавления
+     */
+    private function refreshComposit(){
+//       todo: сделать обновление вывода состава
     }
 }
