@@ -60,11 +60,14 @@ Route::group([
     'prefix'    =>  'composit',
     'as'        =>  'composit.',
 ], function(){
-        Route::get("updateStatus/{id}", [CompositController::class, "updateStatus"])
-                ->name('updateStatus');
-
         Route::post("ajaxAddComposit", [CompositController::class, "ajaxAddComposit"])
                 ->name('ajaxAddComposit');
+
+        Route::get("ajaxDeletComposit/{composit_id}", [CompositController::class, "ajaxDeleteComposit"])
+                ->name('ajaxDeleteComposit');
+
+        Route::get("ajaxChangeCompositStatus/{composit_id}", [CompositController::class, "ajaxChangeCompositStatus"])
+                ->name('ajaxChangeCompositStatus');
 });
 
 /*Route::group([

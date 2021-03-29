@@ -19,7 +19,7 @@ class Composit extends Model
         return $this->hasOne(PrintableObject::class, 'id', 'object_id');
     }
 
-    public static function changeStatus($query){
+/*    public static function changeStatus($query){
 //        todo:придумать как подменивать значение статуса
-    }
+    }*/
 }

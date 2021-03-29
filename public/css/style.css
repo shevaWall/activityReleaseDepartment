@@ -1,0 +1,18 @@
+tbody[id^="compositGroup_"] img {
+    width: 25px;
+}
+
+.pointer{
+    cursor: pointer;
+}
+
+p.pointer:hover{
+    text-decoration:underline;
+}
+
+p.uncompleted{
+    color:red;
+}
+p.completed{
+    color: green;
+}
