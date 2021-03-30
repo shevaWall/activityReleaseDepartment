@@ -8,7 +8,7 @@
             </a>
         </div>
 
-        <div class="col-11">
+        <div class="col-11 my-auto">
             <h1 class="text-center">
                 {{$object->name}}
             </h1>
@@ -28,23 +28,7 @@
                         <tbody id="compositGroup_{{$compositGroup->id}}">
                         @foreach($composits as $k => $composit)
                             @if($composit->compositGroup_id == $compositGroup->id)
-                                <tr>
-                                    <th scope="row"></th>
-                                    <td>{{$composit->name}}</td>
-                                    <td>
-                                        <p class="m-0 pointer {{ ($composit->completed == "Готов") ? 'completed' : 'uncompleted' }}"
-                                            id="compositId_{{$composit->id}}"
-                                            onclick="ajaxCompositChangeStatus(this)">
-                                            {{$composit->completed}}
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <p class="ajaxDeleteComposit pointer"
-                                            onclick="ajaxDeleteComposit(this)">
-                                            <img src="/storage/trash.svg" alt="Удалить" title="Удалить"/>
-                                        </p>
-                                    </td>
-                                </tr>
+                                @include('composit.newTr', $composit)
                             @endif
                         @endforeach
                         <tr>

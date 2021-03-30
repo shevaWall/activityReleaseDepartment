@@ -7,7 +7,7 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Название</th>
-                    <th scope="col">Шифр</th>
+                    <th scope="col">Готовность</th>
                     <th scope="col">Статус</th>
                     <th scope="col">Срок сдачи</th>
                     <th scope="col" colspan="2" class="text-center">Действия</th>
@@ -21,7 +21,8 @@
                             <a href="{{route('objects.composit', $object->id)}}">
                                 {{$object->name}}</td>
                             </a>
-                        <td>{{$object->cipher}}</td>
+{{--                        <td>{{$object->cipher}}</td>--}}
+                        <td>{{$object->composits['persents']}} %</td>
                         <td>{{$object->status->name}}</td>
                         <td>{{$object->deadline}}</td>
                         @if(!request()->routeIs('objects.deleted'))

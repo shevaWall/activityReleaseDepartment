@@ -14,8 +14,23 @@ class PrintableObjectController extends Controller
      */
     public function index()
     {
+        $objs = PrintableObject::where('status_id', 1)
+            ->with('status')
+            ->with('composits')
+            ->get();
+
+        foreach($objs as $obj_k => $obj_v){
+            $completed      = $objs[$obj_k]->composits->where('completed', "Готов")->count();
+            $uncompleted    = $objs[$obj_k]->composits->where('completed', "Не готов")->count();
+            if(!($completed === 0 && $uncompleted === 0)){
+                $objs[$obj_k]->composits['persents'] = round($completed/($uncompleted+$completed) * 100);
+            }else{
+                $objs[$obj_k]->composits['persents'] = 0;
+            }
+        }
+
         return view('objects.index')
-            ->with('objects', PrintableObject::where('status_id', 1)->with('status')->get());
+            ->with('objects', $objs);
     }
 
     /**

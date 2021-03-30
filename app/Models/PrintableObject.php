@@ -12,11 +12,19 @@ class PrintableObject extends Model
     protected $guarded = [];
 
     /**
-     * Получаем статус для объекта печати
+     * Получаем название статуса для объекта печати
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function status(){
         return $this->hasOne(Status::class, 'id', 'status_id');
+    }
+
+    /**
+     * получаем все разделы данного объекта
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function composits(){
+        return $this->hasMany(Composit::class, 'object_id', 'id');
     }
 
     /**
