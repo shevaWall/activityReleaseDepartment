@@ -39,7 +39,9 @@ class CompositController extends Controller
         $req = $request->all();
         $req['completed'] = 0;
         $addedComposit = Composit::create($req);
-        echo $addedComposit;
+//        echo $addedComposit;
+        return view('composit.newTr')
+            ->with('composit', $addedComposit);
     }
 
     /**

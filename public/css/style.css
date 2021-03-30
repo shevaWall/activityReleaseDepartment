@@ -16,3 +16,15 @@ p.uncompleted{
 p.completed{
     color: green;
 }
+
+.numeratedTable{
+    counter-reset: compositCounter ;
+}
+
+.numeratedTable tbody tr{
+    counter-increment: compositCounter;
+}
+
+.numeratedTable tbody tr:not(:last-child) th:before{
+    content: counter(compositCounter);
+}

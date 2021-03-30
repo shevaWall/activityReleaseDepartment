@@ -17,7 +17,7 @@
             <div class="col-4">
                 <div class="h2 text-center">{{$compositGroup->name}} - {{$persents["$compositGroup->id"]}}%</div>
                 <form action="{{route('composit.ajaxAddComposit')}}" method="post">
-                    <table class="table">
+                    <table class="table numeratedTable">
                         <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -26,15 +26,15 @@
                         </tr>
                         </thead>
                         <tbody id="compositGroup_{{$compositGroup->id}}">
-                        @php $counter = 1; @endphp
                         @foreach($composits as $k => $composit)
                             @if($composit->compositGroup_id == $compositGroup->id)
                                 <tr>
-                                    <th scope="row">{{$counter++}}</th>
+                                    <th scope="row"></th>
                                     <td>{{$composit->name}}</td>
                                     <td>
                                         <p class="m-0 pointer {{ ($composit->completed == "Готов") ? 'completed' : 'uncompleted' }}"
-                                           id="compositId_{{$composit->id}}">
+                                            id="compositId_{{$composit->id}}"
+                                            onclick="ajaxCompositChangeStatus(this)">
                                             {{$composit->completed}}
                                         </p>
                                     </td>
