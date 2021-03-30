@@ -19,28 +19,31 @@ $(document).ready(function () {
 
                 $(lastTr).before(msg);
                 $(o_form).find('input[name="name"]').val('');
-            }
-        });
-    });
-
-    // ajax удаление раздела
-    $('.ajaxDeleteComposit').on('click', function (e) {
-        e.preventDefault();
-
-        let removedTr = $(this).parents('tr');
-
-        $.ajax({
-            type: 'get',
-            url: $(this).attr('href'),
-
-            success: function(msg){
-                // todo: а что если пытаются удалить элемент, которого нет?
-                $(removedTr).remove();
+                recountPersents($(o_form).find('tbody'));
             }
         });
     });
 });
 
+
+// ajax удаление раздела
+function ajaxDeleteComposit(composit){
+    let removedTr   = $(composit).parents('tr');
+    let compositId  = parseInt($(removedTr).find('p[id^="compositId_"]').attr('id').replace(/\D+/g,""));
+    let url         = "/composit/ajaxDeleteComposit/"+compositId;
+
+    $.ajax({
+        type: 'get',
+        url: url,
+
+        success: function(msg){
+            let tbody = $(removedTr).parents('tbody')
+            // todo: а что если пытаются удалить элемент, которого нет?
+            $(removedTr).remove();
+            recountPersents(tbody);
+        }
+    });
+}
 
 // ajax изменение статуса раздела
 function ajaxCompositChangeStatus(composit){
@@ -54,6 +57,21 @@ function ajaxCompositChangeStatus(composit){
         success: function(msg){
             $(composit).text(msg);
             $(composit).toggleClass('completed uncompleted');
+            recountPersents($(composit).parents('tbody'));
         }
     });
+}
+
+// перерасчет процентного соотношения выполненой печати для группы разделов
+function recountPersents(compositGroup){
+    let compositGroupId         = parseInt($(compositGroup).attr('id').replace(/\D+/g,""));
+    let uncompletedComposits    = $(compositGroup).find('p.uncompleted').length;
+    let completedComposits      = $(compositGroup).find('p.completed').length;
+    if(!(uncompletedComposits === 0 && completedComposits === 0)){
+        let persents                = parseInt(completedComposits/(uncompletedComposits+completedComposits)*100);
+        $('span#compositGroupPersents_'+compositGroupId).text(persents);
+    }else{
+        $('span#compositGroupPersents_'+compositGroupId).text(0);
+    }
+
 }

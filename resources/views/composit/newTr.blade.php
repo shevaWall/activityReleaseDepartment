@@ -9,8 +9,9 @@
         </p>
     </td>
     <td>
-        <a class="ajaxDeleteComposit" href="{{route('composit.ajaxDeleteComposit', $composit->id)}}">
-            <img src="/storage/trash.svg" alt="Удалить" title="Удалить">
-        </a>
+        <p class="ajaxDeleteComposit pointer"
+           onclick="ajaxDeleteComposit(this)">
+            <img src="/storage/trash.svg" alt="Удалить" title="Удалить"/>
+        </p>
     </td>
 </tr>

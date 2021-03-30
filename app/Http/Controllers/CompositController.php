@@ -96,4 +96,5 @@ class CompositController extends Controller
 
         return $groupPersents;
     }
+
 }

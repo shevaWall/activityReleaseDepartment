@@ -63,7 +63,7 @@ Route::group([
         Route::post("ajaxAddComposit", [CompositController::class, "ajaxAddComposit"])
                 ->name('ajaxAddComposit');
 
-        Route::get("ajaxDeletComposit/{composit_id}", [CompositController::class, "ajaxDeleteComposit"])
+        Route::get("ajaxDeleteComposit/{composit_id}", [CompositController::class, "ajaxDeleteComposit"])
                 ->name('ajaxDeleteComposit');
 
         Route::get("ajaxChangeCompositStatus/{composit_id}", [CompositController::class, "ajaxChangeCompositStatus"])

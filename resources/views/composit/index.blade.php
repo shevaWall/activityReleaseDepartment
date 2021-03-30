@@ -15,7 +15,7 @@
         </div>
         @foreach($compositGroups as $compositGroup)
             <div class="col-4">
-                <div class="h2 text-center">{{$compositGroup->name}} - {{$persents["$compositGroup->id"]}}%</div>
+                <div class="h2 text-center">{{$compositGroup->name}} - <span id="compositGroupPersents_{{$compositGroup->id}}">{{$persents["$compositGroup->id"]}}</span>%</div>
                 <form action="{{route('composit.ajaxAddComposit')}}" method="post">
                     <table class="table numeratedTable">
                         <thead>
@@ -39,10 +39,10 @@
                                         </p>
                                     </td>
                                     <td>
-                                        <a class="ajaxDeleteComposit"
-                                           href="{{route('composit.ajaxDeleteComposit', $composit->id)}}">
+                                        <p class="ajaxDeleteComposit pointer"
+                                            onclick="ajaxDeleteComposit(this)">
                                             <img src="/storage/trash.svg" alt="Удалить" title="Удалить"/>
-                                        </a>
+                                        </p>
                                     </td>
                                 </tr>
                             @endif
