@@ -62,6 +62,22 @@ function ajaxCompositChangeStatus(composit){
     });
 }
 
+// ajax изменение состояния объекта
+function ajaxChangeObjectStatus(element) {
+    console.log($(element).find('option:selected'));
+
+    $.ajax({
+        type: 'get',
+        url: url,
+
+        success: function(msg){
+            $(composit).text(msg);
+            $(composit).toggleClass('completed uncompleted');
+            recountPersents($(composit).parents('tbody'));
+        }
+    });
+}
+
 // перерасчет процентного соотношения выполненой печати для группы разделов
 function recountPersents(compositGroup){
     let compositGroupId         = parseInt($(compositGroup).attr('id').replace(/\D+/g,""));
@@ -73,5 +89,4 @@ function recountPersents(compositGroup){
     }else{
         $('span#compositGroupPersents_'+compositGroupId).text(0);
     }
-
 }

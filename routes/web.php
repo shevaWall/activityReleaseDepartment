@@ -50,6 +50,9 @@ Route::group([
     Route::get("remove/{id}", [PrintableObjectController::class, "removeObject"])
             ->name('removeObject');
 
+    Route::get("ajaxChangeObjectStatus/{id}", [PrintableObjectController::class, "ajaxChangeObjectStatus"])
+            ->name('ajaxChangeObjectStatus');
+
 
     Route::get("composit/{object_id}", [CompositController::class, "index"])
             ->name('composit');

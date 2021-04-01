@@ -21,9 +21,24 @@
                             <a href="{{route('objects.composit', $object->id)}}">
                                 {{$object->name}}</td>
                             </a>
-{{--                        <td>{{$object->cipher}}</td>--}}
-                        <td>{{$object->composits['persents']}} %</td>
-                        <td>{{$object->status->name}}</td>
+                        <td>
+                            @if(request()->routeIs('objects.index'))
+                                {{$object->composits['persents']}} %
+                            @endif
+                        </td>
+                        <td>
+                            <select class="form-select" id="objectStatusId_{{$object->id}}" onchange="ajaxChangeObjectStatus(this)">
+                                @foreach($statuses as $status)
+                                    <option
+                                        value="{{$status->id}}"
+                                        {{($object->status->name == $status->name) ? 'selected' : ""}}
+                                        >{{$status->name}}</option>
+{{--                                    <option>{{$object->status->name}}</option>--}}
+                                @endforeach
+
+                            </select>
+
+                        </td>
                         <td>{{$object->deadline}}</td>
                         @if(!request()->routeIs('objects.deleted'))
                             <td class="text-center my-auto">

@@ -19,6 +19,7 @@ class PrintableObjectController extends Controller
             ->with('composits')
             ->get();
 
+        // считаем количество выполненных разделов в процентном соотношении к общему количеству разделов
         foreach($objs as $obj_k => $obj_v){
             $completed      = $objs[$obj_k]->composits->where('completed', "Готов")->count();
             $uncompleted    = $objs[$obj_k]->composits->where('completed', "Не готов")->count();
@@ -30,7 +31,10 @@ class PrintableObjectController extends Controller
         }
 
         return view('objects.index')
-            ->with('objects', $objs);
+            ->with([
+                'objects'   => $objs,
+                'statuses'  => Status::all(),
+            ]);
     }
 
     /**
@@ -126,5 +130,10 @@ class PrintableObjectController extends Controller
     {
         PrintableObject::findOrFail($id)->delete();
         return redirect()->route('objects.deleted');
+    }
+
+//    ajax изменение статуса объекта
+    public function ajaxChangeObjectStatus(int $id){
+
     }
 }
