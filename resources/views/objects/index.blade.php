@@ -2,8 +2,9 @@
 
 @section('content')
     @if (isset($objects))
-        <table class="table table-striped">
-            <thead>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">Название</th>
@@ -12,15 +13,15 @@
                     <th scope="col">Срок сдачи</th>
                     <th scope="col" colspan="2" class="text-center">Действия</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 @foreach($objects as $k => $object)
                     <tr>
                         <th scope="row">{{++$k}}</th>
                         <td>
                             <a href="{{route('objects.composit', $object->id)}}">
-                                {{$object->name}}</td>
-                            </a>
+                            {{$object->name}}</td>
+                        </a>
                         <td>
                             @if(request()->routeIs('objects.index'))
                                 {{$object->composits['persents']}} %
@@ -32,8 +33,8 @@
                                     <option
                                         value="{{$status->id}}"
                                         {{($object->status->name == $status->name) ? 'selected' : ""}}
-                                        >{{$status->name}}</option>
-{{--                                    <option>{{$object->status->name}}</option>--}}
+                                    >{{$status->name}}</option>
+                                    {{--                                    <option>{{$object->status->name}}</option>--}}
                                 @endforeach
 
                             </select>
@@ -65,8 +66,10 @@
                         @endif
                     </tr>
                 @endforeach
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+
     @endif
 
     @if(!request()->routeIs('objects.deleted'))
