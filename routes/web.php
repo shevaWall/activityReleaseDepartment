@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CompositController;
+use App\Http\Controllers\CountPdfController;
 use App\Http\Controllers\PrintableObjectController;
 use Illuminate\Support\Facades\Route;
 
@@ -72,6 +73,20 @@ Route::group([
         Route::get("ajaxChangeCompositStatus/{composit_id}", [CompositController::class, "ajaxChangeCompositStatus"])
                 ->name('ajaxChangeCompositStatus');
 });
+
+Route::group([
+//    'middleware'=>  '',
+    'prefix'    =>  'countPdf',
+    'as'        =>  'countPdf.',
+], function(){
+    Route::post('ajaxCountPdf/{composit_id}', [CountPdfController::class, "ajaxLoadFile"])
+            ->name('/ajaxCountPdf');
+
+    Route::get("/ajaxGetCountedPdf/{composit_id}", [CountPdfController::class, "ajaxGetCountedPdf"])
+            ->name('ajaxGetCountedPdf');
+});
+
+
 
 /*Route::group([
 //    'middleware'=>  '',

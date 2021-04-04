@@ -14,16 +14,17 @@
             </h1>
         </div>
         @foreach($compositGroups as $compositGroup)
-            <div class="col-4">
+            <div class="col-12">
                 <div class="h2 text-center">{{$compositGroup->name}} - <span id="compositGroupPersents_{{$compositGroup->id}}">{{$persents["$compositGroup->id"]}}</span>%</div>
                 <form action="{{route('composit.ajaxAddComposit')}}" method="post">
                     <table class="table numeratedTable">
                         <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Название раздела</th>
-                            <th scope="col" colspan="2">Статус</th>
-                        </tr>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Название раздела</th>
+                                <th scope="col" colspan="2">Статус</th>
+                                <th scope="col" colspan="2">Форматы</th>
+                            </tr>
                         </thead>
                         <tbody id="compositGroup_{{$compositGroup->id}}">
                         @foreach($composits as $k => $composit)

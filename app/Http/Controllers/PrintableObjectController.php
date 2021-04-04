@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CompositGroup;
 use App\Models\PrintableObject;
 use App\Models\Status;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PrintableObjectController extends Controller
 {
@@ -14,6 +14,12 @@ class PrintableObjectController extends Controller
      */
     public function index()
     {
+        /*$test = new ShevawallPdf(Storage::path('tom2.pdf'));
+        $test->convert2mm();
+        $test->countFormats();*/
+
+
+
         $objs = PrintableObject::where('status_id', 1)
             ->with('status')
             ->with('composits')

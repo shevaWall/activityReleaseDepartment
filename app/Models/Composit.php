@@ -19,6 +19,10 @@ class Composit extends Model
         return $this->hasOne(PrintableObject::class, 'id', 'object_id');
     }
 
+    public function formats(){
+        return $this->hasOne(CountPdf::class, 'composit_id', 'id');
+    }
+
 /*    public static function changeStatus($query){
 //        todo:придумать как подменивать значение статуса
     }*/

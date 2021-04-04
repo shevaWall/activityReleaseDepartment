@@ -65,7 +65,7 @@ function ajaxCompositChangeStatus(composit){
 // ajax изменение состояния объекта
 function ajaxChangeObjectStatus(element) {
     console.log($(element).find('option:selected'));
-
+// todo: доделать
     $.ajax({
         type: 'get',
         url: url,
@@ -89,4 +89,50 @@ function recountPersents(compositGroup){
     }else{
         $('span#compositGroupPersents_'+compositGroupId).text(0);
     }
+}
+
+function ajaxCountFormats(element) {
+    let file_data = $(element).prop('files')[0];
+    let form_data = new FormData();
+    let composit_id = parseInt($(element).parents('tr').find("p[id^='compositId_']").attr('id').replace(/\D+/g,""));
+
+    form_data.append('pdf', file_data);
+    form_data.append('_token', $(element).parents('form').find("input[name='_token']").val());
+
+    $.ajax({
+        url: '/countPdf/ajaxCountPdf/'+composit_id,
+        dataType: 'text',
+        cache: false,
+        mimeType: "multipart/form-data",
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        beforeSend: function(){
+            $(element).siblings("input[type='button']").prop("disabled", true);
+
+            $(element).parents('tr').find('.formatsTable').remove();
+            $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
+        },
+        success: function (msg) {
+            $(element).siblings("input[type='button']").prop("disabled", false);
+            $(element).parents('form')[0].reset();
+
+            $.ajax({
+                type: 'get',
+                url: '/countPdf/ajaxGetCountedPdf/'+composit_id,
+                success: function(msg){
+                    $(element).parents('tr').find('.newTableHere').append(msg);
+                    $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
+                },
+                error: function(msg){
+                    $('#response').append(msg);
+                }
+            });
+        },
+        error: function(msg){
+            console.log('error');
+            $('#response').append(msg)
+        }
+    });
 }

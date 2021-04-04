@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Composit;
 use App\Models\CompositGroup;
+use App\Models\CountPdf;
 use App\Models\PrintableObject;
 use Illuminate\Http\Request;
+use PHPUnit\Framework\Constraint\Count;
 
 class CompositController extends Controller
 {
@@ -17,7 +19,7 @@ class CompositController extends Controller
     public function index(int $object_id){
         $object         = PrintableObject::findOrFail($object_id);
         $compositGroups = CompositGroup::all();
-        $composits      = Composit::where('object_id', $object_id)->with('printableObject')->get();
+        $composits      = Composit::where('object_id', $object_id)->with('printableObject')->with('formats')->get();
         $persents       = $this->persent($composits, $compositGroups);
 
         return view('composit.index')
