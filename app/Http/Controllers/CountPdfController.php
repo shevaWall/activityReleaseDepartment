@@ -128,11 +128,11 @@ class CountPdfController extends Controller
                     $this->WaHorHaW($HaW, $page);
                 } else {
                     // Если такого формата бумаги в массиве нет, то инициализируем его
-                    $this->a_countsFormats[$WaH]['count'] = 1;
+                    $this->a_countsFormats[$HaW]['count'] = 1;
                     // Естественно с определением цветности бумаги
                     ($this->chekOnColored($page)) ?
-                        $this->a_countsFormats[$WaH]['Colored'] = 1 :
-                        $this->a_countsFormats[$WaH]['BW'] = 1;
+                        $this->a_countsFormats[$HaW]['Colored'] = 1 :
+                        $this->a_countsFormats[$HaW]['BW'] = 1;
                 }
             }
         }
