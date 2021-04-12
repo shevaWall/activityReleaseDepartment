@@ -66,7 +66,6 @@
             <div class="row mb-3">
                 <div class="col-sm-10 offset-sm-2">
                     <div class="form-check">
-{{--                        todo: придумать как ставить чекбокс--}}
                         <input class="form-check-input" type="checkbox" id="inputOriginalDoc" name="original_documents" {{($object->original_documents == 1) ? 'checked=checked' : ''}}">
                         <label class="form-check-label" for="inputOriginalDoc">
                             Наличие оригиналов документов

@@ -108,7 +108,10 @@ class PrintableObjectController extends Controller
     public function deletedObjects()
     {
         return view('objects.index')
-            ->with('objects', PrintableObject::where('status_id', 4)->with('status')->get());
+            ->with([
+                'objects' => PrintableObject::where('status_id', 4)->get(),
+                'statuses'  => Status::all()
+            ]);
     }
 
     /**
