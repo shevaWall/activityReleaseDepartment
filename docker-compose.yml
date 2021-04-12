@@ -5,6 +5,7 @@ services:
     #image: library/php:8-fpm-alpine
     build:
       context: ./docker/app
+    restart: always
     volumes:
       - ./docker/app/php-ini/php.ini:/usr/local/etc/php/php.ini
       - ./:/var/www/
@@ -35,6 +36,7 @@ services:
 
   nginx:
     image: library/nginx:alpine
+    restart: always
     ports:
       - 80:80
       - 443:443
