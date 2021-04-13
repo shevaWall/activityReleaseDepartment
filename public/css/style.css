@@ -21,10 +21,10 @@ p.completed{
     counter-reset: compositCounter ;
 }
 
-.numeratedTable tbody tr{
+.numeratedTable > tbody > tr{
     counter-increment: compositCounter;
 }
 
-.numeratedTable tbody tr:not(:last-child) th:before{
+.numeratedTable tbody > tr:not(:last-child) th:before{
     content: counter(compositCounter);
 }
