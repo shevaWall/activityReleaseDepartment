@@ -93,7 +93,7 @@ class CountPdfController extends Controller
     {
         if ($this->pathToPdf) {
             // Через pdfinfo получаем форматы
-            $shell = shell_exec("pdfinfo -f 1 -l 167 $this->pathToPdf | grep 'Page.*size:'");
+            $shell = shell_exec("pdfinfo -f 1 -l -1 $this->pathToPdf | grep 'Page.*size:'");
             preg_match_all('/([0-9]{0,5}\.?[0-9]{0,3}) x ([0-9]{0,5}\.?[0-9]{0,3})/', $shell, $res);
             $this->sizes = $res;
             $this->widths = $res[1];
@@ -239,7 +239,7 @@ class CountPdfController extends Controller
     }
 
     public function test(){
-        $this->pathToPdf = "/var/www/storage/app/public/test.pdf";
+        $this->pathToPdf = "/var/www/storage/app/public/II_big_PDF.pdf";
         $this->shellPdfExec();
 
 

@@ -15,6 +15,10 @@ class Composit extends Model
         return $v = ($v == 1) ? 'Готов' : 'Не готов';
     }
 
+    /**
+     * Получаем весь состав данного объекта
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function printableObject(){
         return $this->hasOne(PrintableObject::class, 'id', 'object_id');
     }
@@ -22,8 +26,4 @@ class Composit extends Model
     public function formats(){
         return $this->hasOne(CountPdf::class, 'composit_id', 'id');
     }
-
-/*    public static function changeStatus($query){
-//        todo:придумать как подменивать значение статуса
-    }*/
 }
