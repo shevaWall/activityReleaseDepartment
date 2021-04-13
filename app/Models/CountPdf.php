@@ -18,4 +18,5 @@ class CountPdf extends Model
     public function getFormatsAttribute($value){
         return json_decode($value);
     }
+
 }

@@ -14,12 +14,6 @@ class PrintableObjectController extends Controller
      */
     public function index()
     {
-        /*$test = new ShevawallPdf(Storage::path('tom2.pdf'));
-        $test->convert2mm();
-        $test->countFormats();*/
-
-
-
         $objs = PrintableObject::where('status_id', 1)
             ->with('status')
             ->with('composits')

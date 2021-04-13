@@ -17,6 +17,10 @@ p.completed{
     color: green;
 }
 
+.fontsize10{
+    font-size: 10px;
+}
+
 .numeratedTable{
     counter-reset: compositCounter ;
 }

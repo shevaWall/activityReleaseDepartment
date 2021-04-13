@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Composit;
 use App\Models\CountPdf;
+use App\Models\PrintableObject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -80,9 +81,8 @@ class CountPdfController extends Controller
 
 
     /**
-     * выплёвывает массив всех размеров страниц в ПДФ в pts
+     * выплёвывает массив всех размеров страниц в ПДФ в pts (unused)
      * @return array
-     * unused
      */
     public function getSizes(): array
     {
@@ -197,7 +197,7 @@ class CountPdfController extends Controller
     }
 
     /**
-     * Проверяет, является ли страница цветной
+     * Проверяет, является ли страница BW
      * @param int $page - номер страницы
      * @return bool
      */
@@ -236,6 +236,22 @@ class CountPdfController extends Controller
         $composit = Composit::where('id', $composit_id)->with('formats')->get();
         return view('composit.formatsTable')
             ->with('composit', $composit[0]);
+    }
+
+    /**
+     * очищает весь список подсчитанных форматов
+     * @param int $object_id
+     */
+    public function clearAll(int $object_id){
+        $object = PrintableObject::where('id', $object_id)
+            ->with('countPdf')
+            ->get();
+
+        foreach($object[0]->countPdf as $k => $v){
+            CountPdf::destroy($v->id);
+        }
+
+        return redirect()->back();
     }
 
     public function test(){

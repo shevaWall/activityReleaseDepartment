@@ -39,4 +39,15 @@ class PrintableObject extends Model
         }
         $this->attributes['original_documents'] = $v;
     }
+
+    public function countPdf(){
+        return $this->hasManyThrough(
+            CountPdf::class,
+            Composit::class,
+            'object_id',
+            'composit_id',
+            'id',
+            'id'
+        );
+    }
 }

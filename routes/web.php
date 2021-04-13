@@ -82,10 +82,13 @@ Route::group([
     Route::post('ajaxCountPdf/{composit_id}', [CountPdfController::class, "ajaxLoadFile"])
             ->name('/ajaxCountPdf');
 
-    Route::get("test", [CountPdfController::class, "test"]);
-
     Route::get("/ajaxGetCountedPdf/{composit_id}", [CountPdfController::class, "ajaxGetCountedPdf"])
             ->name('ajaxGetCountedPdf');
+
+    Route::get("clearAll/{object_id}", [CountPdfController::class, "clearAll"])
+            ->name('clearAll');
+
+    Route::get("test", [CountPdfController::class, "test"]);
 });
 
 
