@@ -10,7 +10,33 @@
                     <a class="nav-link {{request()->routeIs('index') ? 'active' : ''}}" aria-current="page" href="{{route('index')}}">Главная</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{request()->routeIs('objects.index') ? 'active' : ''}}" aria-current="page" href="{{route('objects.index')}}">Объекты</a>
+                    <div class="btn-group">
+                        <button type="button"
+                                class="btn btn-{{request()->routeIs('objects.*') ? 'success' : 'secondary'}}">
+                            <a class="nav-link p-0 text-white"
+                               aria-current="page"
+                               href="{{route('objects.index')}}">Объекты</a>
+                        </button>
+                        <button type="button"
+                                class="btn btn-{{request()->routeIs('objects.*') ? 'success' : 'secondary'}} dropdown-toggle dropdown-toggle-split"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item"
+                                   href="{{route('objects.index')}}">В работе (<span id="inWorkCount">{{$cntPrntblObjsStatuses[1]}}</span>)</a></li>
+                            <li><a class="dropdown-item"
+                                   href="{{route('objects.withStatus', 3)}}">На паузе (<span id="inPauseCount">{{$cntPrntblObjsStatuses[3]}}</span>)</a></li>
+                            <li><a class="dropdown-item"
+                                   href="{{route('objects.withStatus', 2)}}">Сданы (<span id="inCompleteCount">{{$cntPrntblObjsStatuses[2]}}</span>)</a></li>
+                            <li><a class="dropdown-item"
+                                   href="{{route('objects.withStatus', 4)}}">Удалённые (<span id="inDeleteCount">{{$cntPrntblObjsStatuses[4]}}</span>)</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item"
+                                   href="{{route('objects.withStatus', 5)}}">Все (<span id="inAllCount">{{$cntPrntblObjsStatuses[5]}}</span>)</a></li>
+                        </ul>
+                    </div>
                 </li>
                 {{--<li class="nav-item">
                     <a class="nav-link {{request()->routeIs('settings.index') ? 'active' : ''}}" aria-current="page" href="{{route('settings.index')}}">Настройки</a>

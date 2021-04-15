@@ -19,16 +19,7 @@ class PrintableObjectController extends Controller
             ->with('composits')
             ->get();
 
-        // считаем количество выполненных разделов в процентном соотношении к общему количеству разделов
-        foreach($objs as $obj_k => $obj_v){
-            $completed      = $objs[$obj_k]->composits->where('completed', "Готов")->count();
-            $uncompleted    = $objs[$obj_k]->composits->where('completed', "Не готов")->count();
-            if(!($completed === 0 && $uncompleted === 0)){
-                $objs[$obj_k]->composits['persents'] = round($completed/($uncompleted+$completed) * 100);
-            }else{
-                $objs[$obj_k]->composits['persents'] = 0;
-            }
-        }
+        $objs = $this->countPercent($objs);
 
         return view('objects.index')
             ->with([
@@ -72,18 +63,6 @@ class PrintableObjectController extends Controller
     }
 
     /**
-     * изменение статуса объекта на "удалён
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function StatusDeletedObject(int $id)
-    {
-        PrintableObject::findOrFail($id)->update(['status_id' => 4]);
-
-        return redirect()->route('objects.index');
-    }
-
-    /**
      * отображение настроек объекта
      * @param int $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
@@ -96,32 +75,23 @@ class PrintableObjectController extends Controller
     }
 
     /**
-     * отображение списка удалённых объектов
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * отображения списка объектов по статусу (при значении 5 - отображаются все записи)
+     * @param int $status_id
      */
-    public function deletedObjects()
-    {
+    public function withStatus(int $status_id){
+        if($status_id != 5){
+            $objs = PrintableObject::where('status_id', $status_id)->get();
+        }else{
+            $objs = PrintableObject::all();
+        }
+
+        $objs = $this->countPercent($objs);
+
         return view('objects.index')
             ->with([
-                'objects' => PrintableObject::where('status_id', 4)->get(),
+                'objects' => $objs,
                 'statuses'  => Status::all()
             ]);
-    }
-
-    /**
-     * восстанавливает удалённый объект
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function restoreObject(int $id)
-    {
-        PrintableObject::findOrFail($id)->update(
-            [
-                'status_id' => 1
-            ]
-        );
-
-        return redirect()->route('objects.deleted');
     }
 
     /**
@@ -131,12 +101,38 @@ class PrintableObjectController extends Controller
      */
     public function removeObject(int $id)
     {
+//        todo: сделать safe delete
         PrintableObject::findOrFail($id)->delete();
-        return redirect()->route('objects.deleted');
+        return redirect()->route('objects.index');
     }
 
-//    ajax изменение статуса объекта
-    public function ajaxChangeObjectStatus(int $id){
+    /**
+     * // считаем количество выполненных разделов в процентном соотношении к общему количеству разделов
+     * @param $objs - массив объектов "объектов"
+     * @return mixed
+     */
+    private function countPercent($objs){
+        foreach($objs as $obj_k => $obj_v){
+            $completed      = $objs[$obj_k]->composits->where('completed', "Готов")->count();
+            $uncompleted    = $objs[$obj_k]->composits->where('completed', "Не готов")->count();
+            if(!($completed === 0 && $uncompleted === 0)){
+                $objs[$obj_k]->composits['persents'] = round($completed/($uncompleted+$completed) * 100);
+            }else{
+                $objs[$obj_k]->composits['persents'] = 0;
+            }
+        }
+        return $objs;
+    }
 
+    /**
+     * ajax изменение статуса объекта
+     * @param int $object_id - id объекта
+     * @param int $status_id - id статуса, на кт меняется
+     */
+    public function ajaxChangeObjectStatus(int $object_id, int $status_id){
+        $obj = PrintableObject::where('id', $object_id)->update([
+            'status_id' => $status_id
+        ]);
+        return redirect()->back();
     }
 }

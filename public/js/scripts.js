@@ -64,16 +64,19 @@ function ajaxCompositChangeStatus(composit){
 
 // ajax изменение состояния объекта
 function ajaxChangeObjectStatus(element) {
-    console.log($(element).find('option:selected'));
-// todo: доделать
+    let tr = $(element).parents('tr');
+    $(tr).fadeOut();
+    // $(tr).addClass('d-none');
+    let status_id = $(element).find('option:selected').val()
+    let object_id = parseInt($(element).attr('id').replace(/\D+/g, ""));
+    let url = "/objects/changeObjectStatus/"+object_id+"/"+status_id;
+
     $.ajax({
         type: 'get',
         url: url,
 
         success: function(msg){
-            $(composit).text(msg);
-            $(composit).toggleClass('completed uncompleted');
-            recountPersents($(composit).parents('tbody'));
+            console.log(msg);
         }
     });
 }

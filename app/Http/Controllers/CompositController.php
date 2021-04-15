@@ -51,6 +51,7 @@ class CompositController extends Controller
      * @param int $composit_id
      */
     public function ajaxDeleteComposit(int $composit_id){
+//        todo: safe delete для countPdf
         Composit::findOrFail($composit_id)->delete();
     }
 
@@ -64,7 +65,6 @@ class CompositController extends Controller
         ($composit->completed == 'Не готов') ? $composit->completed = 1 : $composit->completed = 0;
         $composit->save();
         echo $composit->completed;
-
     }
 
     /**

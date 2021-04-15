@@ -32,26 +32,24 @@ Route::group([
     Route::get("/", [PrintableObjectController::class, "index"])
         ->name('index');
 
+    Route::get("withStatus/{status_id}", [PrintableObjectController::class, "withStatus"])
+            ->name('withStatus');
+
     Route::get("add", [PrintableObjectController::class, "addNewObjectForm"])
         ->name('show_form');
     Route::post("add", [PrintableObjectController::class, "addNewObjectSubmit"])
         ->name('submit_form');
 
-    Route::get('delete/{id}', [PrintableObjectController::class, "StatusDeletedObject"])
+    Route::get('delete/{object_id}', [PrintableObjectController::class, "ajaxChangeObjectStatus"])
         ->name('deleteObject');
 
     Route::get("edit/{id}", [PrintableObjectController::class, "showObjectSettings"])
         ->name('showObjectSettings');
 
-    Route::get("deleted", [PrintableObjectController::class, "deletedObjects"])
-            ->name('deleted');
-
-    Route::get("restore/{id}", [PrintableObjectController::class, "restoreObject"])
-            ->name('restoreObject');
     Route::get("remove/{id}", [PrintableObjectController::class, "removeObject"])
             ->name('removeObject');
 
-    Route::get("ajaxChangeObjectStatus/{id}", [PrintableObjectController::class, "ajaxChangeObjectStatus"])
+    Route::get("changeObjectStatus/{object_id}/{status_id}", [PrintableObjectController::class, "ajaxChangeObjectStatus"])
             ->name('ajaxChangeObjectStatus');
 
 
@@ -59,6 +57,9 @@ Route::group([
             ->name('composit');
 });
 
+/**
+ * роуты для работы с составами объектов
+ */
 Route::group([
 //    'middleware'=>  '',
     'prefix'    =>  'composit',
@@ -74,6 +75,9 @@ Route::group([
                 ->name('ajaxChangeCompositStatus');
 });
 
+/**
+ * роуты для работы с подсчетом страниц по форматам в ПДФ
+ */
 Route::group([
 //    'middleware'=>  '',
     'prefix'    =>  'countPdf',
@@ -90,14 +94,3 @@ Route::group([
 
     Route::get("test", [CountPdfController::class, "test"]);
 });
-
-
-
-/*Route::group([
-//    'middleware'=>  '',
-    'prefix'    =>  'settings',
-    'as'        =>  'settings.',
-], function(){
-    Route::get("/", [SettingsController::class, "index"]);
-});*/
-

@@ -23,9 +23,7 @@
                             {{$object->name}}</td>
                         </a>
                         <td>
-                            @if(request()->routeIs('objects.index'))
-                                {{$object->composits['persents']}} %
-                            @endif
+                            {{$object->composits['persents']}} %
                         </td>
                         <td>
                             <select class="form-select" id="objectStatusId_{{$object->id}}" onchange="ajaxChangeObjectStatus(this)">
@@ -34,33 +32,25 @@
                                         value="{{$status->id}}"
                                         {{($object->status->name == $status->name) ? 'selected' : ""}}
                                     >{{$status->name}}</option>
-                                    {{--                                    <option>{{$object->status->name}}</option>--}}
                                 @endforeach
-
                             </select>
-
                         </td>
                         <td>{{$object->deadline}}</td>
-                        @if(!request()->routeIs('objects.deleted'))
+                        <td class="text-center my-auto">
+                            <a href="{{route('objects.showObjectSettings', [$object->id])}}">
+                                <img class="img-fluid" style="width:32px;" src="/storage/pencil.svg" alt="Редактировать">
+                            </a>
+                        </td>
+                        @if(!request()->is('objects/withStatus/4'))
                             <td class="text-center my-auto">
-                                <a href="{{route('objects.showObjectSettings', [$object->id])}}">
-                                    <img class="img-fluid" style="max-width:32px;" src="/storage/pencil.svg" alt="Редактировать">
-                                </a>
-                            </td>
-                            <td class="text-center my-auto">
-                                <a href="{{route('objects.deleteObject', [$object->id])}}">
-                                    <img class="img-fluid" style="max-width:32px;" src="/storage/delete.svg" alt="Удалить">
+                                <a href="{{route('objects.ajaxChangeObjectStatus', [$object->id, 4])}}">
+                                    <img class="img-fluid" style="width:32px;" src="/storage/delete.svg" alt="Удалить">
                                 </a>
                             </td>
                         @else
                             <td class="text-center my-auto">
-                                <a href="{{route('objects.restoreObject', [$object->id])}}">
-                                    <img class="img-fluid" style="max-width:32px;" src="/storage/restore.svg" alt="Восстановить" title="Восстановить">
-                                </a>
-                            </td>
-                            <td class="text-center my-auto">
                                 <a href="{{route('objects.removeObject', [$object->id])}}">
-                                    <img class="img-fluid" style="max-width:32px;" src="/storage/trash.svg" alt="Удалить навсегда" title="Удалить навсегда">
+                                    <img class="img-fluid" style="width:32px;" src="/storage/trash.svg" alt="Удалить навсегда" title="Удалить навсегда">
                                 </a>
                             </td>
                         @endif
@@ -69,17 +59,11 @@
                 </tbody>
             </table>
         </div>
-
     @endif
 
-    @if(!request()->routeIs('objects.deleted'))
-    <div class="row">
-        <div class="col-6">
-            <a href="{{route('objects.show_form')}}" class="btn btn-primary">Добавить объект</a>
-        </div>
-        <div class="col-6 text-end">
-            <a href="{{route('objects.deleted')}}" class="text-secondary">Удаленные объекты</a>
-        </div>
+<div class="row">
+    <div class="col-6">
+        <a href="{{route('objects.show_form')}}" class="btn btn-primary">Добавить объект</a>
     </div>
-    @endif
+</div>
 @endsection
