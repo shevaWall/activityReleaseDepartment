@@ -186,7 +186,6 @@ class CountPdfController extends Controller
      */
     public function countFormats(): array
     {
-//        todo: сделать сортировку от меньшего к большему
         $countPages = count($this->sizes[0]);
 
         for ($page = 0; $page < $countPages; $page++) {
@@ -229,6 +228,7 @@ class CountPdfController extends Controller
             }
         }
 
+        ksort($this->a_countsFormats);
         return $this->a_countsFormats;
     }
 
@@ -308,6 +308,13 @@ class CountPdfController extends Controller
      */
     public function ajaxDropCounted(int $composit_id){
         CountPdf::where('composit_id', $composit_id)->delete();
+    }
+
+    /**
+     * заглушка для не правильного расширения файла
+     */
+    public function ajaxBadExtension(){
+        return view('errors.badPdfExtension');
     }
 
     public function test(){

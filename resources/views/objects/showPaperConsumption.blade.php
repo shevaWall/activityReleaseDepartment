@@ -2,7 +2,12 @@
 
 @section('content')
     <div class="row">
-        <div class="col-12 my-auto mx-auto text-center">
+        <div class="col-1 my-auto text-center">
+            <a href="{{route('objects.composit', $object->id)}}">
+                <img class="img-fluid" src="/storage/backArrow.svg" alt="Назад" title="Назад">
+            </a>
+        </div>
+        <div class="col-11 my-auto mx-auto text-center">
             <h1 class="h1">{{$object->name}}</h1>
         </div>
     </div>

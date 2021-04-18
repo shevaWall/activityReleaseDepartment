@@ -11,9 +11,6 @@ $(document).ready(function () {
             data: $(o_form).serialize(),
 
             success: function (msg) {
-                // $('#response').append(msg);
-
-                // todo: добавить красивую анимацию popup'a о добавлении раздела
                 let tbody   = $(o_form).find("tbody");
                 let lastTr  = $(tbody).find('tr').last();
 
@@ -29,7 +26,6 @@ $(document).ready(function () {
 function ajaxChangeObjectStatus(element) {
     let tr = $(element).parents('tr');
     $(tr).fadeOut();
-    // $(tr).addClass('d-none');
     let status_id = $(element).find('option:selected').val()
     let object_id = parseInt($(element).attr('id').replace(/\D+/g, ""));
     let url = "/objects/changeObjectStatus/"+object_id+"/"+status_id;
@@ -95,6 +91,9 @@ function recountPersents(compositGroup){
 // аякс подсчет страниц pdf
 function ajaxCountFormats(element) {
     let file_data = $(element).prop('files')[0];
+    let fileName = file_data.name;
+    let fileNameParts = fileName.split('.');
+    let fileExtension = fileNameParts[fileNameParts.length-1].toLowerCase();
     let form_data = new FormData();
     let composit_id = parseInt($(element).parents('tr').attr('id').replace(/\D+/g,""));
     let error_pdf = $(element).parents('tr').find('.error_pdf');
@@ -102,59 +101,74 @@ function ajaxCountFormats(element) {
     form_data.append('pdf', file_data);
     form_data.append('_token', $(element).parents('form').find("input[name='_token']").val());
 
-    $.ajax({
-        url: '/countPdf/ajaxCountPdf/'+composit_id,
-        dataType: 'text',
-        cache: false,
-        mimeType: "multipart/form-data",
-        contentType: false,
-        processData: false,
-        data: form_data,
-        type: 'post',
-        beforeSend: function(){
-            $(element).siblings("input[type='button']").prop("disabled", true);
+    if(fileExtension === 'pdf') {
+        $.ajax({
+            url: '/countPdf/ajaxCountPdf/' + composit_id,
+            dataType: 'text',
+            cache: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            processData: false,
+            data: form_data,
+            type: 'post',
+            beforeSend: function () {
+                $(element).siblings("input[type='button']").prop("disabled", true);
 
-            $(element).parents('tr').find('.formatsTable').remove();
-            $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
-            if(!$(error_pdf).hasClass('d-none')){
-                $(error_pdf).toggleClass('d-none');
-            }
-        },
-        success: function (msg) {
-            $(element).siblings("input[type='button']").prop("disabled", false);
-            // todo: при success почему-то сбрасывает для всех форм
-            $(element).parents('form')[0].reset();
-
-            $.ajax({
-                type: 'get',
-                url: '/countPdf/ajaxGetCountedPdf/'+composit_id,
-                success: function(msg){
-                    $(element).parents('tr').find('.newTableHere').append(msg);
-                    $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
-                },
-                error: function(msg){
-                    $('#response').append(msg);
+                $(element).parents('tr').find('.formatsTable').remove();
+                $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
+                if (!$(error_pdf).hasClass('d-none')) {
+                    $(error_pdf).toggleClass('d-none');
                 }
-            });
-        },
-        error: function(msg){
-            $('#response').html(msg.responseText);
-            let badPdf_modal = new bootstrap.Modal(document.getElementById('badPdf_modal'));
+            },
+            success: function (msg) {
+                $(element).siblings("input[type='button']").prop("disabled", false);
+                $(element).val('');
 
-            $(element).siblings("input[type='button']").prop("disabled", false);
-            // todo: при success почему-то сбрасывает для всех форм
-            $(element).parents('form')[0].reset();
-            $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
+                $.ajax({
+                    type: 'get',
+                    url: '/countPdf/ajaxGetCountedPdf/' + composit_id,
+                    success: function (msg) {
+                        $(element).parents('tr').find('.newTableHere').append(msg);
+                        $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
+                    },
+                    error: function (msg) {
+                        $('#response').append(msg);
+                    }
+                });
+            },
+            error: function (msg) {
+                $('#response').html(msg.responseText);
+                let badPdf_modal = new bootstrap.Modal(document.getElementById('badPdf_modal'));
 
-            if($(error_pdf).hasClass('d-none'))
-                $(error_pdf).toggleClass('d-none');
+                $(element).siblings("input[type='button']").prop("disabled", false);
+                $(element).val('');
+                $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
 
-            badPdf_modal.toggle();
-            badPdf_modal._element.addEventListener('hide.bs.modal', function(event){
-                $('#response').html('');
-            });
-        }
-    });
+                if ($(error_pdf).hasClass('d-none'))
+                    $(error_pdf).toggleClass('d-none');
+
+                badPdf_modal.toggle();
+                badPdf_modal._element.addEventListener('hide.bs.modal', function (event) {
+                    $('#response').html('');
+                });
+            }
+        });
+    }else{
+        $.ajax({
+            type: 'get',
+            url: '/countPdf/ajaxBadExtension',
+
+            success: function(msg){
+                console.log(msg);
+                $('#response').html(msg);
+                let badPdfExtension = new bootstrap.Modal(document.getElementById('badPdfExtension'));
+                badPdfExtension.toggle();
+                badPdfExtension._element.addEventListener('hide.bs.modal', function (event) {
+                    $('#response').html('');
+                });
+            }
+        });
+    }
 }
 
 /**

@@ -69,9 +69,11 @@ class PrintableObjectController extends Controller
      */
     public function showObjectSettings(int $id)
     {
-//        todo: при редактировании уже существующего объекта в настройках должен быть выбор изменения статуса объекта (status_id)
         return view('objects.showObjectSettings')
-            ->with('object', PrintableObject::findOrFail($id));
+            ->with([
+                'object' => PrintableObject::findOrFail($id),
+                'statuses' => Status::all(),
+            ]);
     }
 
     /**

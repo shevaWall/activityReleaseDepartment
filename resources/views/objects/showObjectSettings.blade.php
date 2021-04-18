@@ -81,6 +81,20 @@
                 </div>
             </div>
 
+            <div class="row mb-3">
+                <label for="objectStatusId_{{$object->id}}" class="col-sm-2 col-form-label">Статус</label>
+                <div class="col-sm-10">
+                    <select class="form-select" id="objectStatusId_{{$object->id}}" name="status_id">
+                        @foreach($statuses as $status)
+                            <option
+                                value="{{$status->id}}"
+                                {{($object->status->name == $status->name) ? 'selected' : ""}}
+                            >{{$status->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
 
             <div class="row">
                 <div class="col my-auto text-center">

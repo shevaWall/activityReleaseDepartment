@@ -97,5 +97,7 @@ Route::group([
 
     Route::get("ajaxDropCounted/{composit_id}", [CountPdfController::class, "ajaxDropCounted"]);
 
+    Route::get("ajaxBadExtension", [CountPdfController::class, "ajaxBadExtension"]);
+
     Route::get("test", [CountPdfController::class, "test"]);
 });
