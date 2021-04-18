@@ -135,4 +135,51 @@ class PrintableObjectController extends Controller
         ]);
         return redirect()->back();
     }
+
+    /**
+     * выводит общий расход бумаги
+     */
+    public function showPaperConsumption(int $object_id){
+        $obj = PrintableObject::where('id', $object_id)
+            ->with('countPdf')
+            ->get();
+
+        $a_formats = array();
+
+//        todo: разделять на подсчет ПД/РД/ИИ отдельно
+//        todo:2 перемножать всё это делать на значение, выставленное в настройках объекта
+
+        foreach($obj[0]->countPdf as $countPdf){
+            foreach($countPdf->formats as $formatName => $format){
+                // если такого формата нет - добавляем и инициализируем первые значения
+                if(!array_key_exists($formatName, $a_formats)){
+                    if(isset($format->Colored))
+                        $a_formats[$formatName]['Colored'] = $format->Colored;
+                    if(isset($format->BW))
+                        $a_formats[$formatName]['BW'] = $format->BW;
+                }else{
+                    // если такой формат уже есть, то складываем циферЬки
+                    if(isset($format->Colored))
+                        if(isset($a_formats[$formatName]['Colored'])){
+                            $a_formats[$formatName]['Colored'] = $a_formats[$formatName]['Colored'] + $format->Colored;
+                        }else{
+                            $a_formats[$formatName]['Colored'] = $format->Colored;
+                        }
+                    if(isset($format->BW))
+                        if(isset($a_formats[$formatName]['BW'])){
+                            $a_formats[$formatName]['BW'] = $a_formats[$formatName]['BW'] + $format->BW;
+                        }else{
+                            $a_formats[$formatName]['BW'] = $format->BW;
+                        }
+                }
+            }
+        }
+        ksort($a_formats);
+
+        return view('objects.showPaperConsumption')
+            ->with([
+                'object' => $obj[0],
+                'formats' => $a_formats,
+            ]);
+    }
 }

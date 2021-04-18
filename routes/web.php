@@ -55,6 +55,9 @@ Route::group([
 
     Route::get("composit/{object_id}", [CompositController::class, "index"])
             ->name('composit');
+
+    Route::get("{object_id}/showPaperConsumption", [PrintableObjectController::class, "showPaperConsumption"])
+            ->name('paperConsumption');
 });
 
 /**
@@ -91,6 +94,8 @@ Route::group([
 
     Route::get("clearAll/{object_id}", [CountPdfController::class, "clearAll"])
             ->name('clearAll');
+
+    Route::get("ajaxDropCounted/{composit_id}", [CountPdfController::class, "ajaxDropCounted"]);
 
     Route::get("test", [CountPdfController::class, "test"]);
 });

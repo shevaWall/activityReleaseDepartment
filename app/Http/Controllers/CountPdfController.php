@@ -7,13 +7,19 @@ use App\Models\CountPdf;
 use App\Models\PrintableObject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use phpDocumentor\Reflection\Types\Mixed_;
 
 class CountPdfController extends Controller
 {
     /**
-     * @var string - путь до файла PDF
+     * @var string - абсолютный путь до файла PDF. Нужен для работы с gs и pdfinfo
      */
     private $pathToPdf;
+
+    /**
+     * @var string - путь для Storage. Нужен для работы Storage
+     */
+    private $pdf;
 
     /**
      * @var array - массив со всеми исходными размерами (включая widths and heights)
@@ -46,37 +52,58 @@ class CountPdfController extends Controller
      * @var int - погрешность +/- формата листа. Т.к. люди не умеют PDF'ить, то и появляется погрешность вида
      * 297х210, 296х210, 297х209, 297х211 и т.д.
      */
-    private static $tolerance = 10;
+    private static $tolerance = 50;
 
     private static $a_ISO_format = array([
-        'A4'    => [210, 297],
-        'A4x3'  => [297, 630],
-        'A4x4'  => [297, 841],
-        'A4x5'  => [297, 1051],
-        'A4x6'  => [297, 1261],
-        'A4x7'  => [297, 1471],
-        'A4x8'  => [297, 1682],
-        'A4x9'  => [297, 1982],
+        'A4'        => [210, 297],
+        'A4x3'      => [297, 630],
+        'A4x4'      => [297, 841],
+        'A4x5'      => [297, 1051],
+        'A4x6'      => [297, 1261],
+        'A4x7'      => [297, 1471],
+        'A4x8'      => [297, 1682],
+        'A4x9'      => [297, 1982],
 
-        'A3'    => [297, 420],
-        'A3x3'  => [420, 891],
-        'A3x4'  => [420, 1189],
-        'A3x5'  => [420, 1486],
-        'A3x6'  => [420, 1783],
-        'A3x7'  => [420, 2080],
+        'A3'        => [297, 420],
+        'A3x3'      => [420, 891],
+        'A3x4'      => [420, 1189],
+        'A3x5'      => [420, 1486],
+        'A3x6'      => [420, 1783],
+        'A3x7'      => [420, 2080],
+        'A3x8'      => [420, 2376],
+        'A3x9'      => [420, 2673],
 
-        'A2'    => [420, 594],
-        'A2x3'  => [594, 1261],
-        'A2x4'  => [594, 1682],
-        'A2x5'  => [594, 2102],
+        'A2'        => [420, 594],
+        'A2x3'      => [594, 1261],
+        'A2x4'      => [594, 1682],
+        'A2x5'      => [594, 2102],
+        'A2x6'      => [594, 2520],
+        'A2x7'      => [594, 2940],
+        'A2x8'      => [594, 3360],
+        'A2x9'      => [594, 3780],
 
-        'A1'    => [594, 841],
-        'A1x2'  => [841, 1783],
-        'A1x3'  => [841, 2378],
+        'A1'        => [594, 841],
+        'A1x1,5'    => [841, 891],
+        'A1x2,5'    => [841, 1485],
+        'A1x3'      => [841, 1782],
+        'A1x4'      => [841, 2376],
+        'A1x5'      => [841, 2970],
+        'A1x6'      => [841, 3564],
+        'A1x7'      => [841, 4158],
+        'A1x8'      => [841, 4752],
+        'A1x9'      => [841, 5346],
 
-        'A0'    => [841, 1198],
-        'A0x2'  => [118, 1682],
-        'A0x3'  => [118, 2523],
+        'A0'        => [841, 1198],
+        'A0x1,5'    => [1189, 1262],
+        'A0x2'      => [1189, 1682],
+        'A0x2,5'    => [1189, 2103],
+        'A0x3'      => [1189, 2523],
+        'A0x4'      => [1189, 3364],
+        'A0x5'      => [1189, 4205],
+        'A0x6'      => [1189, 5046],
+        'A0x7'      => [1189, 5887],
+        'A0x8'      => [1189, 6728],
+        'A0x9'      => [1189, 7569],
     ]);
 
 
@@ -89,7 +116,11 @@ class CountPdfController extends Controller
         return $this->sizes;
     }
 
-    private function shellPdfExec(): bool
+    /**
+     * через shell выполняем запросы pdfinfo и ghostscript
+     * @return bool
+     */
+    private function shellPdfExec()
     {
         if ($this->pathToPdf) {
             // Через pdfinfo получаем форматы
@@ -101,10 +132,17 @@ class CountPdfController extends Controller
 
             // через ghostscript получаем цветность
             $shell2 = shell_exec("gs -dSAFER -dNOPAUSE -dBATCH -o- -sDEVICE=inkcov $this->pathToPdf | grep -E '([0-9]{1}\.[0-9]{5})'");
-            preg_match_all('/([0-9]{1}\.[0-9]{5})  ([0-9]{1}\.[0-9]{5})  ([0-9]{1}\.[0-9]{5})  ([0-9]{1}\.[0-9]{5})/', $shell2, $this->a_CMYKPages);
 
-            $this->convert2mm();
-            return true;
+            // удаляем файл, дальше он нам не нужен
+            Storage::delete($this->pdf);
+
+            if($shell2 !== null){
+                preg_match_all('/([0-9]{1}\.[0-9]{5})  ([0-9]{1}\.[0-9]{5})  ([0-9]{1}\.[0-9]{5})  ([0-9]{1}\.[0-9]{5})/', $shell2, $this->a_CMYKPages);
+                $this->convert2mm();
+                return true;
+            }else{
+                return false;
+            }
         } else {
             echo 'такого файла не существует';
             return false;
@@ -119,7 +157,6 @@ class CountPdfController extends Controller
         foreach ($this->widths as $k => $width) {
             $this->widths[$k] = intval($width / static::$coef);
         }
-
         foreach ($this->heights as $k => $height) {
             $this->heights[$k] = intval($height / static::$coef);
         }
@@ -168,7 +205,6 @@ class CountPdfController extends Controller
                 foreach($a_formats as $k=>$v){
                     if($v[0]-self::$tolerance <= $smaller && $smaller <= $v[0]+self::$tolerance){
                         if($v[1]-self::$tolerance <= $bigger && $bigger <= $v[1]+self::$tolerance){
-
                             // Если такой формат бумаги уже есть в массиве
                             if (array_key_exists($k, $this->a_countsFormats)) {
                                 $this->WaHorHaW($k, $page);
@@ -214,20 +250,30 @@ class CountPdfController extends Controller
 
 
 //    todo: свой request для обработки
+
+    /**
+     * загружаем файл к себе, для его обработки. После обработки удаляём
+     * @param Request $request
+     * @param int $composit_id
+     */
     public function ajaxLoadFile(Request $request, int $composit_id)
     {
         if ($request->file('pdf')) {
             $pdf = Storage::putFile('pdfs', $request->file('pdf'));
-            $this->pathToPdf = Storage::path($pdf);
-            if ($this->shellPdfExec()) {
+            $this->pdf = $pdf;
+            $this->pathToPdf = Storage::path($this->pdf);
+
+            if ($this->shellPdfExec() === true) {
                 CountPdf::updateOrCreate([
                     'composit_id' => $composit_id
                 ], [
                         'formats' => json_encode($this->countFormats())
                     ]
                 );
+            }else{
+                $data['error_code'] = 406;
+                return response()->view('errors.bad_pdf', $data, 406);
             }
-            Storage::delete($pdf);
         }
     }
 
@@ -241,8 +287,10 @@ class CountPdfController extends Controller
     /**
      * очищает весь список подсчитанных форматов
      * @param int $object_id
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function clearAll(int $object_id){
+    public function clearAll(int $object_id): \Illuminate\Http\RedirectResponse
+    {
         $object = PrintableObject::where('id', $object_id)
             ->with('countPdf')
             ->get();
@@ -254,11 +302,22 @@ class CountPdfController extends Controller
         return redirect()->back();
     }
 
+    /**
+     * очищает список подсчитанных форматов у определенного раздела (состава)
+     * @param int $composit_id
+     */
+    public function ajaxDropCounted(int $composit_id){
+        CountPdf::where('composit_id', $composit_id)->delete();
+    }
+
     public function test(){
-        $this->pathToPdf = "/var/www/storage/app/public/II_big_PDF.pdf";
+//        $this->pathToPdf = "/var/www/storage/app/public/II_bad_copy.pdf";
+        $pdf = Storage::putFile('pdfs', '/var/www/storage/app/public/II_bad.pdf');
+        $this->pdf = $pdf;
+        $this->pathToPdf = Storage::path($this->pdf);
         $this->shellPdfExec();
 
-
         dump($this->countFormats());
+        dump(Storage::delete($this->pdf));
     }
 }

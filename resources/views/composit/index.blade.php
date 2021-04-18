@@ -14,10 +14,14 @@
             </h1>
         </div>
 
-{{--         <a href="{{route('countPdf.clearAll', $object->id)}}" class="text-secondary btn-secondary">(очистить)</a>--}}
         <div class="col-auto mx-auto">
             <a class="btn btn-danger" href="{{route('countPdf.clearAll', $object->id)}}">Очистить все форматы</a>
         </div>
+
+        <div class="col-auto mx-auto">
+            <a class="btn btn-success" href="{{route('objects.paperConsumption', $object->id)}}">Вывести общий расход бумаги</a>
+        </div>
+
         @foreach($compositGroups as $compositGroup)
             <div class="col-12">
                 <div class="h2 text-center">{{$compositGroup->name}} - <span id="compositGroupPersents_{{$compositGroup->id}}">{{$persents["$compositGroup->id"]}}</span>%</div>

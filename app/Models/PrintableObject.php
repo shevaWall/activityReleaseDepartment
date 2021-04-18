@@ -40,6 +40,10 @@ class PrintableObject extends Model
         $this->attributes['original_documents'] = $v;
     }
 
+    /**
+     * получаем все посчитанные страницы PDF для объекта
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
     public function countPdf(){
         return $this->hasManyThrough(
             CountPdf::class,
