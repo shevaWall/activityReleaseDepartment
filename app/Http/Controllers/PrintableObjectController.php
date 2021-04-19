@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Composit;
 use App\Models\PrintableObject;
 use App\Models\Status;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class PrintableObjectController extends Controller
@@ -104,7 +106,12 @@ class PrintableObjectController extends Controller
     public function removeObject(int $id)
     {
 //        todo: сделать safe delete
-        PrintableObject::findOrFail($id)->delete();
+
+        $obj = PrintableObject::findOrFail($id);
+        $obj->countPdf()->delete();
+        $obj->composits()->delete();
+        $obj->delete();
+
         return redirect()->route('objects.index');
     }
 
@@ -183,5 +190,20 @@ class PrintableObjectController extends Controller
                 'object' => $obj[0],
                 'formats' => $a_formats,
             ]);
+    }
+
+    /**
+     * для поиска
+     */
+    public function ajaxSearchObject(){
+        $search = request()->query()['term'];
+        $objs = DB::table('printable_objects')->where('name', 'like', "%$search%")->select('id', 'name')->get();
+
+        $response = array();
+        foreach($objs as $obj){
+            $response[] = array('id'=>$obj->id, 'name'=>$obj->name);
+        }
+        echo json_encode($response);
+        exit;
     }
 }

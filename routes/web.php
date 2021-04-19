@@ -58,6 +58,8 @@ Route::group([
 
     Route::get("{object_id}/showPaperConsumption", [PrintableObjectController::class, "showPaperConsumption"])
             ->name('paperConsumption');
+
+    Route::get("search", [PrintableObjectController::class, "ajaxSearchObject"]);
 });
 
 /**

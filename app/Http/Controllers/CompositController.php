@@ -51,7 +51,7 @@ class CompositController extends Controller
      * @param int $composit_id
      */
     public function ajaxDeleteComposit(int $composit_id){
-//        todo: safe delete для countPdf
+        CountPdf::where('composit_id', $composit_id)->delete();
         Composit::findOrFail($composit_id)->delete();
     }
 
