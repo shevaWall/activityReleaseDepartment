@@ -25,8 +25,8 @@ class PrintableObjectController extends Controller
 
         return view('objects.index')
             ->with([
-                'objects'   => $objs,
-                'statuses'  => Status::all(),
+                'objects' => $objs,
+                'statuses' => Status::all(),
             ]);
     }
 
@@ -82,10 +82,11 @@ class PrintableObjectController extends Controller
      * отображения списка объектов по статусу (при значении 5 - отображаются все записи)
      * @param int $status_id
      */
-    public function withStatus(int $status_id){
-        if($status_id != 5){
+    public function withStatus(int $status_id)
+    {
+        if ($status_id != 5) {
             $objs = PrintableObject::where('status_id', $status_id)->get();
-        }else{
+        } else {
             $objs = PrintableObject::all();
         }
 
@@ -94,7 +95,7 @@ class PrintableObjectController extends Controller
         return view('objects.index')
             ->with([
                 'objects' => $objs,
-                'statuses'  => Status::all()
+                'statuses' => Status::all()
             ]);
     }
 
@@ -105,8 +106,6 @@ class PrintableObjectController extends Controller
      */
     public function removeObject(int $id)
     {
-//        todo: сделать safe delete
-
         $obj = PrintableObject::findOrFail($id);
         $obj->countPdf()->delete();
         $obj->composits()->delete();
@@ -120,13 +119,14 @@ class PrintableObjectController extends Controller
      * @param $objs - массив объектов "объектов"
      * @return mixed
      */
-    private function countPercent($objs){
-        foreach($objs as $obj_k => $obj_v){
-            $completed      = $objs[$obj_k]->composits->where('completed', "Готов")->count();
-            $uncompleted    = $objs[$obj_k]->composits->where('completed', "Не готов")->count();
-            if(!($completed === 0 && $uncompleted === 0)){
-                $objs[$obj_k]->composits['persents'] = round($completed/($uncompleted+$completed) * 100);
-            }else{
+    private function countPercent($objs)
+    {
+        foreach ($objs as $obj_k => $obj_v) {
+            $completed = $objs[$obj_k]->composits->where('completed', "Готов")->count();
+            $uncompleted = $objs[$obj_k]->composits->where('completed', "Не готов")->count();
+            if (!($completed === 0 && $uncompleted === 0)) {
+                $objs[$obj_k]->composits['persents'] = round($completed / ($uncompleted + $completed) * 100);
+            } else {
                 $objs[$obj_k]->composits['persents'] = 0;
             }
         }
@@ -138,7 +138,8 @@ class PrintableObjectController extends Controller
      * @param int $object_id - id объекта
      * @param int $status_id - id статуса, на кт меняется
      */
-    public function ajaxChangeObjectStatus(int $object_id, int $status_id){
+    public function ajaxChangeObjectStatus(int $object_id, int $status_id)
+    {
         $obj = PrintableObject::where('id', $object_id)->update([
             'status_id' => $status_id
         ]);
@@ -148,9 +149,11 @@ class PrintableObjectController extends Controller
     /**
      * выводит общий расход бумаги
      */
-    public function showPaperConsumption(int $object_id){
+    public function showPaperConsumption(int $object_id)
+    {
         $obj = PrintableObject::where('id', $object_id)
             ->with('countPdf')
+            ->with('composits')
             ->get();
 
         $a_formats = array();
@@ -158,7 +161,52 @@ class PrintableObjectController extends Controller
 //        todo: разделять на подсчет ПД/РД/ИИ отдельно
 //        todo:2 перемножать всё это делать на значение, выставленное в настройках объекта
 
-        foreach($obj[0]->countPdf as $countPdf){
+        foreach ($obj[0]->composits as $composit) {
+            foreach ($obj[0]->countPdf as $countPdf) {
+                if ($composit->id == $countPdf->composit_id) {
+                    $multypler = 1;
+                    // устанавливаем множитель в зависимости от настроек объекта
+                    switch ($composit->compositGroup_id) {
+                        case 1:
+                            (!is_null($obj[0]->count_pd)) ? $multypler = $obj[0]->count_pd : $multypler = 1;
+                            break;
+                        case 2:
+                            (!is_null($obj[0]->count_rd)) ? $multypler = $obj[0]->count_rd : $multypler = 1;
+                            break;
+                        case 3:
+                            (!is_null($obj[0]->count_ii)) ? $multypler = $obj[0]->count_ii : $multypler = 1;
+                            break;
+                    }
+                    foreach ($countPdf->formats as $formatName => $format) {
+                        // если такого формата нет - добавляем и инициализируем первые значения
+                        if (!array_key_exists($formatName, $a_formats)) {
+                            if (isset($format->Colored))
+                                $a_formats[$formatName]['Colored'] = $format->Colored * $multypler;
+                            if (isset($format->BW))
+                                $a_formats[$formatName]['BW'] = $format->BW * $multypler;
+                        } else {
+                            // если такой формат уже есть, то складываем циферЬки
+                            if (isset($format->Colored)) {
+                                if (isset($a_formats[$formatName]['Colored'])) {
+                                    $a_formats[$formatName]['Colored'] = $a_formats[$formatName]['Colored'] + ($format->Colored * $multypler);
+                                } else {
+                                    $a_formats[$formatName]['Colored'] = $format->Colored * $multypler;
+                                }
+                            }
+                            if (isset($format->BW)) {
+                                if (isset($a_formats[$formatName]['BW'])) {
+                                    $a_formats[$formatName]['BW'] = $a_formats[$formatName]['BW'] + ($format->BW * $multypler);
+                                } else {
+                                    $a_formats[$formatName]['BW'] = $format->BW * $multypler;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /*foreach($obj[0]->countPdf as $countPdf){
             foreach($countPdf->formats as $formatName => $format){
                 // если такого формата нет - добавляем и инициализируем первые значения
                 if(!array_key_exists($formatName, $a_formats)){
@@ -182,7 +230,7 @@ class PrintableObjectController extends Controller
                         }
                 }
             }
-        }
+        }*/
         ksort($a_formats);
 
         return view('objects.showPaperConsumption')
@@ -195,13 +243,14 @@ class PrintableObjectController extends Controller
     /**
      * для поиска
      */
-    public function ajaxSearchObject(){
+    public function ajaxSearchObject()
+    {
         $search = request()->query()['term'];
         $objs = DB::table('printable_objects')->where('name', 'like', "%$search%")->select('id', 'name')->get();
 
         $response = array();
-        foreach($objs as $obj){
-            $response[] = array('id'=>$obj->id, 'name'=>$obj->name);
+        foreach ($objs as $obj) {
+            $response[] = array('id' => $obj->id, 'name' => $obj->name);
         }
         echo json_encode($response);
         exit;

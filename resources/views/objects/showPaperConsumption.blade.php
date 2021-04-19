@@ -12,6 +12,13 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-auto">В настроках объекта установлены следующие настройки:</div>
+        <div class="col-auto">ПД: @php ((!is_null($object->count_pd) ? print_r ($object->count_pd) : print_r(1) )) @endphp экз.</div>
+        <div class="col-auto">РД: @php ((!is_null($object->count_rd) ? print_r ($object->count_rd) : print_r(1) )) @endphp экз.</div>
+        <div class="col-auto">ИИ: @php ((!is_null($object->count_ii) ? print_r ($object->count_ii) : print_r(1) )) @endphp экз.</div>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-striped">
             <thead>
