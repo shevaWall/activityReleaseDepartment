@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Composit;
 use App\Models\PrintableObject;
 use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class PrintableObjectController extends Controller
 {
     /**
-     * отображение списка всех объектов
+     * отображение списка всех объектов в работе
      */
     public function index()
     {
@@ -50,7 +48,7 @@ class PrintableObjectController extends Controller
          * todo: добавить свой валидатор Request и загрузку файлов
          * как минимум проверка на уникальность связки полей "название" и "шифр". И если идентичные уже есть - не позволять создавать
          * */
-
+//        todo: сделать загрузку заявки на распечатку
         if (is_null($request->id)) {
             $req = $request->all();
             $req['status_id'] = 1;
@@ -140,7 +138,7 @@ class PrintableObjectController extends Controller
      */
     public function ajaxChangeObjectStatus(int $object_id, int $status_id)
     {
-        $obj = PrintableObject::where('id', $object_id)->update([
+        PrintableObject::where('id', $object_id)->update([
             'status_id' => $status_id
         ]);
         return redirect()->back();
@@ -158,9 +156,7 @@ class PrintableObjectController extends Controller
 
         $a_formats = array();
 
-//        todo: разделять на подсчет ПД/РД/ИИ отдельно
-//        todo:2 перемножать всё это делать на значение, выставленное в настройках объекта
-
+//        todo: разделять на подсчет ПД/РД/ИИ отдельно и общий
         foreach ($obj[0]->composits as $composit) {
             foreach ($obj[0]->countPdf as $countPdf) {
                 if ($composit->id == $countPdf->composit_id) {

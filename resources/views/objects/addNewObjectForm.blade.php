@@ -20,6 +20,13 @@
             </div>
 
             <div class="row mb-3">
+                <label for="inputNomerZayavki" class="col-sm-2 col-form-label">Номер заявки</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputNomerZayavki" name="cipher">
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <label for="inputFile" class="col-sm-2 col-form-label">Скан заявки</label>
                 <div class="col-sm-10">
                     <input class="form-control" type="file" id="inputFile" name="scan_img">
