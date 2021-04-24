@@ -46,9 +46,44 @@ $(document).ready(function () {
         },
         minLength: 2
     });
-
-
 });
+
+
+function dndDrop(element){
+    stopPreventDef();
+
+    let input = $(element).siblings('input[type="file"]');
+    let files = window.event.dataTransfer.files;
+
+    $(element).removeClass('highlight');
+    if(files.length > 1){
+        $(element).text('Сюда можно загрузить только один файл! Отмена обработки.');
+    }else{
+        $(element).text('Обработка ...');
+        ajaxCountFormats(element, files[0]);
+    }
+
+
+}
+function dndDragenter(element){
+    $(element).addClass('highlight');
+    $(element).text('Отпустите, чтобы загрузить файл.');
+}
+function dndDragleave(element){
+    $(element).removeClass('highlight');
+    $(element).text('Для загрузки, перетащите файл сюда или нажмите здесь.');
+}
+function stopPreventDef(){
+    window.event.stopPropagation();
+    window.event.preventDefault();
+}
+
+// для загрузки DnD файлов. Вызов проводника при клике на область
+function openFileExplorer(element){
+    let compositId = parseInt($(element).parents('tr').attr('id').replace(/\D+/g, ""));
+    let input = $('#countPdf_'+compositId);
+    $(input).click();
+}
 
 // ajax изменение состояния объекта
 function ajaxChangeObjectStatus(element) {
@@ -118,16 +153,18 @@ function recountPersents(compositGroup) {
 
 
 // аякс подсчет страниц pdf
-function ajaxCountFormats(element) {
-    let file_data = $(element).prop('files')[0];
-    let fileName = file_data.name;
+function ajaxCountFormats(element, file) {
+    let fileName = file.name;
     let fileNameParts = fileName.split('.');
     let fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
+
     let form_data = new FormData();
     let composit_id = parseInt($(element).parents('tr').attr('id').replace(/\D+/g, ""));
+
     let error_pdf = $(element).parents('tr').find('.error_pdf');
 
-    form_data.append('pdf', file_data);
+    // добавляем в FormData файл pdf и токен
+    form_data.append('pdf', file);
     form_data.append('_token', $(element).parents('form').find("input[name='_token']").val());
 
     if (fileExtension === 'pdf') {
@@ -141,24 +178,32 @@ function ajaxCountFormats(element) {
             data: form_data,
             type: 'post',
             beforeSend: function () {
-                $(element).siblings("input[type='button']").prop("disabled", true);
-
+                // $(element).siblings("input[type='button']").prop("disabled", true);
+                // очищаем поле с таблицей под новые данные
                 $(element).parents('tr').find('.formatsTable').remove();
+                // показываем спиннер, чтобы было видно, что процесс идёт
                 $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
+                // если до этого срабатывал флаг на ошибку загрузки файла, то прячем его
                 if (!$(error_pdf).hasClass('d-none')) {
                     $(error_pdf).toggleClass('d-none');
                 }
             },
             success: function (msg) {
-                $(element).siblings("input[type='button']").prop("disabled", false);
-                $(element).val('');
+                // $(element).siblings("input[type='button']").prop("disabled", false);
+                // сбрасываем скрытый input для загрузки файлов (если файл был загружен через проводник)
+                $(element).siblings('input[type="file"]').val('');
 
+                // получаем новые обработанные данные страниц
                 $.ajax({
                     type: 'get',
                     url: '/countPdf/ajaxGetCountedPdf/' + composit_id,
                     success: function (msg) {
+                        // отображаем новые обработанные форматы страниц
                         $(element).parents('tr').find('.newTableHere').append(msg);
+                        // выключаем спиннер
                         $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
+                        // возвращаем надпись в DnD блоке в исходное состояние
+                        $(element).text('Успешно!');
                     },
                     error: function (msg) {
                         $('#response').append(msg);
@@ -166,20 +211,32 @@ function ajaxCountFormats(element) {
                 });
             },
             error: function (msg) {
+                console.log(msg.status);
                 $('#response').html(msg.responseText);
                 let badPdf_modal = new bootstrap.Modal(document.getElementById('badPdf_modal'));
 
-                $(element).siblings("input[type='button']").prop("disabled", false);
-                $(element).val('');
+                // $(element).siblings("input[type='button']").prop("disabled", false);
+                // сбрасываем скрытый input для загрузки файлов (если файл был загружен через проводник)
+                $(element).siblings('input[type="file"]').val('');
+                // выключаем спиннер
                 $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
 
-                if ($(error_pdf).hasClass('d-none'))
+                if ($(error_pdf).hasClass('d-none')){
                     $(error_pdf).toggleClass('d-none');
+                    if(msg.status === 504){
+                        $(element).text('Для этого файла нужно больше времени на обработку. ' +
+                            'Процесс всё ещё идёт в фоновом режиме. Попробуйте перезагрузить страницу позже.');
+                    }else{
+                        $(element).text('Произошла ошибка');
 
-                badPdf_modal.toggle();
-                badPdf_modal._element.addEventListener('hide.bs.modal', function (event) {
-                    $('#response').html('');
-                });
+                        // отображаем всплывашку ошибки
+                        badPdf_modal.toggle();
+
+                        badPdf_modal._element.addEventListener('hide.bs.modal', function (event) {
+                            $('#response').html('');
+                        });
+                    }
+                }
             }
         });
     } else {
@@ -200,9 +257,8 @@ function ajaxCountFormats(element) {
     }
 }
 
-/**
- * сбрасываем посчитанные страницы PDF у определенного раздела (состава)
- */
+
+// ajax сбрасываем посчитанные страницы PDF у определенного раздела (состава)
 function ajaxCompositRefresh(element) {
     let composit_id = parseInt($(element).parents('tr').attr('id').replace(/\D+/g, ""));
     let tableTbody = $(element).parents('tr').find('.formatsTable tbody');

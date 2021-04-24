@@ -32,3 +32,14 @@ p.completed{
 .numeratedTable tbody > tr:not(:last-child) th:before{
     content: counter(compositCounter);
 }
+
+
+div[id^='dropZone_'] {
+    border: 3px dashed #ccc;
+    border-radius: 15px;
+    width: 100%;
+    cursor: pointer;
+}
+div[id^='dropZone_'].highlight {
+    border-color: purple;
+}

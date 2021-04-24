@@ -30,8 +30,21 @@
                 <span>ошибка</span>
         </div>
     </td>
-    <td>
-        <input id="countPdf_{{$composit->id}}" type="file" name="pdf" accept=".pdf">
-        <input type="button" value="Подсчитать" onclick="ajaxCountFormats($(this).siblings('#countPdf_{{$composit->id}}'))">
+    <td class="col-4 align-middle">
+        <input class="d-none"
+               id="countPdf_{{$composit->id}}"
+               type="file"
+               name="pdf"
+               accept=".pdf"
+               onchange="ajaxCountFormats($(this).siblings('#dropZone_{{$composit->id}}'), $(this).prop('files')[0])">
+        <div id="dropZone_{{$composit->id}}"
+             class="py-5 text-center"
+             onclick="openFileExplorer(this)"
+             ondragenter="dndDragenter(this)"
+             ondragleave="dndDragleave(this)"
+             ondrop="dndDrop(this)"
+             ondragover="stopPreventDef()">
+            Для загрузки, перетащите файл сюда или нажмите здесь.
+        </div>
     </td>
 </tr>

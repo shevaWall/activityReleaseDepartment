@@ -1,4 +1,4 @@
-<table class="table formatsTable">
+<table class="table formatsTable table-hover">
     <thead>
     <tr>
         <td>Формат</td>
