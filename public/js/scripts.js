@@ -21,67 +21,65 @@ $(document).ready(function () {
         });
     });
 
-    $('#searchObject').autocomplete({
-        //todo: доделать, почему-то не выводит значения
+    // ajax поиск по названию объекта или по номеру заявки
+    $("#searchObject").autocomplete({
         source: function (request, response) {
             $.ajax({
-                url: "/objects/search",
-                type: 'get',
+                url: "/search",
                 dataType: "json",
                 data: {
-                    term: request.term
+                    term: request.term,
+                    ajax: true
                 },
                 success: function (data) {
-                    response($.map(data.d, function (item) {
-                        return {
-                            value: item.name
-                        }
-                    }));
+                    response(data);
                 }
-                /* select: function( event, ui ) {
-                     console.log(event);
-                     console.log(ui);
-                 }*/
             });
         },
         minLength: 2
-    });
+    }).autocomplete( "instance" )._renderItem = function( ul, item ) {
+        return $("<li>")
+            .append("<div><a href='"+item.url+"'>" + item.label+"</a></div>")
+            .appendTo(ul);
+    };
+
 });
 
 
-function dndDrop(element){
+function dndDrop(element) {
     stopPreventDef();
 
     let input = $(element).siblings('input[type="file"]');
     let files = window.event.dataTransfer.files;
 
     $(element).removeClass('highlight');
-    if(files.length > 1){
+    if (files.length > 1) {
         $(element).text('Сюда можно загрузить только один файл! Отмена обработки.');
-    }else{
+    } else {
         $(element).text('Обработка ...');
         ajaxCountFormats(element, files[0]);
     }
-
-
 }
-function dndDragenter(element){
+
+function dndDragenter(element) {
     $(element).addClass('highlight');
     $(element).text('Отпустите, чтобы загрузить файл.');
 }
-function dndDragleave(element){
+
+function dndDragleave(element) {
     $(element).removeClass('highlight');
     $(element).text('Для загрузки, перетащите файл сюда или нажмите здесь.');
 }
-function stopPreventDef(){
+
+function stopPreventDef() {
     window.event.stopPropagation();
     window.event.preventDefault();
 }
 
 // для загрузки DnD файлов. Вызов проводника при клике на область
-function openFileExplorer(element){
+function openFileExplorer(element) {
     let compositId = parseInt($(element).parents('tr').attr('id').replace(/\D+/g, ""));
-    let input = $('#countPdf_'+compositId);
+    let input = $('#countPdf_' + compositId);
     $(input).click();
 }
 
@@ -221,12 +219,12 @@ function ajaxCountFormats(element, file) {
                 // выключаем спиннер
                 $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
 
-                if ($(error_pdf).hasClass('d-none')){
+                if ($(error_pdf).hasClass('d-none')) {
                     $(error_pdf).toggleClass('d-none');
-                    if(msg.status === 504){
+                    if (msg.status === 504) {
                         $(element).text('Для этого файла нужно больше времени на обработку. ' +
                             'Процесс всё ещё идёт в фоновом режиме. Попробуйте перезагрузить страницу позже.');
-                    }else{
+                    } else {
                         $(element).text('Произошла ошибка');
 
                         // отображаем всплывашку ошибки

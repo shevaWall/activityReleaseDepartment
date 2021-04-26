@@ -53,7 +53,7 @@
                     <input class="form-control me-2"
                            id="searchObject"
                            name="term"
-                           type="search"
+                           type="text"
                            placeholder="Объект или номер заявки"
                            aria-label="Search">
                 </form>
