@@ -55,55 +55,55 @@ class CountPdfController extends Controller
     private static $tolerance = 50;
 
     private static $a_ISO_format = array([
-        'A4'        => [210, 297],
-        'A4x3'      => [297, 630],
-        'A4x4'      => [297, 841],
-        'A4x5'      => [297, 1051],
-        'A4x6'      => [297, 1261],
-        'A4x7'      => [297, 1471],
-        'A4x8'      => [297, 1682],
-        'A4x9'      => [297, 1982],
+        'А4'        => [210, 297],
+        'А4*3'      => [297, 630],
+        'А4*4'      => [297, 841],
+        'А4*5'      => [297, 1051],
+        'А4*6'      => [297, 1261],
+        'А4*7'      => [297, 1471],
+        'А4*8'      => [297, 1682],
+        'А4*9'      => [297, 1982],
 
-        'A3'        => [297, 420],
-        'A3x3'      => [420, 891],
-        'A3x4'      => [420, 1189],
-        'A3x5'      => [420, 1486],
-        'A3x6'      => [420, 1783],
-        'A3x7'      => [420, 2080],
-        'A3x8'      => [420, 2376],
-        'A3x9'      => [420, 2673],
+        'А3'        => [297, 420],
+        'А3*3'      => [420, 891],
+        'А3*4'      => [420, 1189],
+        'А3*5'      => [420, 1486],
+        'А3*6'      => [420, 1783],
+        'А3*7'      => [420, 2080],
+        'А3*8'      => [420, 2376],
+        'А3*9'      => [420, 2673],
 
-        'A2'        => [420, 594],
-        'A2x3'      => [594, 1261],
-        'A2x4'      => [594, 1682],
-        'A2x5'      => [594, 2102],
-        'A2x6'      => [594, 2520],
-        'A2x7'      => [594, 2940],
-        'A2x8'      => [594, 3360],
-        'A2x9'      => [594, 3780],
+        'А2'        => [420, 594],
+        'А2*3'      => [594, 1261],
+        'А2*4'      => [594, 1682],
+        'А2*5'      => [594, 2102],
+        'А2*6'      => [594, 2520],
+        'А2*7'      => [594, 2940],
+        'А2*8'      => [594, 3360],
+        'А2*9'      => [594, 3780],
 
-        'A1'        => [594, 841],
-        'A1x1,5'    => [841, 891],
-        'A1x2,5'    => [841, 1485],
-        'A1x3'      => [841, 1782],
-        'A1x4'      => [841, 2376],
-        'A1x5'      => [841, 2970],
-        'A1x6'      => [841, 3564],
-        'A1x7'      => [841, 4158],
-        'A1x8'      => [841, 4752],
-        'A1x9'      => [841, 5346],
+        'А1'        => [594, 841],
+        'А1*1,5'    => [841, 891],
+        'А1*2,5'    => [841, 1485],
+        'А1*3'      => [841, 1782],
+        'А1*4'      => [841, 2376],
+        'А1*5'      => [841, 2970],
+        'А1*6'      => [841, 3564],
+        'А1*7'      => [841, 4158],
+        'А1*8'      => [841, 4752],
+        'А1*9'      => [841, 5346],
 
-        'A0'        => [841, 1198],
-        'A0x1,5'    => [1189, 1262],
-        'A0x2'      => [1189, 1682],
-        'A0x2,5'    => [1189, 2103],
-        'A0x3'      => [1189, 2523],
-        'A0x4'      => [1189, 3364],
-        'A0x5'      => [1189, 4205],
-        'A0x6'      => [1189, 5046],
-        'A0x7'      => [1189, 5887],
-        'A0x8'      => [1189, 6728],
-        'A0x9'      => [1189, 7569],
+        'А0'        => [841, 1198],
+        'А0*1,5'    => [1189, 1262],
+        'А0*2'      => [1189, 1682],
+        'А0*2,5'    => [1189, 2103],
+        'А0*3'      => [1189, 2523],
+        'А0*4'      => [1189, 3364],
+        'А0*5'      => [1189, 4205],
+        'А0*6'      => [1189, 5046],
+        'А0*7'      => [1189, 5887],
+        'А0*8'      => [1189, 6728],
+        'А0*9'      => [1189, 7569],
     ]);
 
 
@@ -191,6 +191,7 @@ class CountPdfController extends Controller
         for ($page = 0; $page < $countPages; $page++) {
             $w = $this->widths[$page];
             $h = $this->heights[$page];
+            // определяем короткую и длинную стороны листа
             if($w < $h){
                 $smaller = $w;
                 $bigger  = $h;
@@ -202,6 +203,7 @@ class CountPdfController extends Controller
             foreach(static::$a_ISO_format as $a_formats){
                 // пробегаем по всему циклу форматов, если встречается такой формат - добавляем его
                 foreach($a_formats as $k=>$v){
+                    // проверяем погрешность листа
                     if($v[0]-self::$tolerance <= $smaller && $smaller <= $v[0]+self::$tolerance){
                         if($v[1]-self::$tolerance <= $bigger && $bigger <= $v[1]+self::$tolerance){
                             // Если такой формат бумаги уже есть в массиве
@@ -220,11 +222,11 @@ class CountPdfController extends Controller
                     }
                 }
                 // если неформат - добавляем кастомный
-                $this->a_countsFormats[$smaller. " x ". $bigger]['count'] = 1;
+                $this->a_countsFormats[$smaller. " * ". $bigger]['count'] = 1;
                 // Естественно с определением цветности бумаги
                 ($this->checkOnColored($page)) ?
-                    $this->a_countsFormats[$smaller. " x ". $bigger]['BW'] = 1:
-                    $this->a_countsFormats[$smaller. " x ". $bigger]['Colored'] = 1;
+                    $this->a_countsFormats[$smaller. " * ". $bigger]['BW'] = 1:
+                    $this->a_countsFormats[$smaller. " * ". $bigger]['Colored'] = 1;
             }
         }
 
@@ -277,6 +279,11 @@ class CountPdfController extends Controller
         }
     }
 
+    /**
+     * Возвращает аякс подсчитанные страницы
+     * @param int $composit_id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function ajaxGetCountedPdf(int $composit_id)
     {
         $composit = Composit::where('id', $composit_id)->with('formats')->get();
@@ -285,7 +292,7 @@ class CountPdfController extends Controller
     }
 
     /**
-     * очищает весь список подсчитанных форматов
+     * очищает весь список подсчитанных форматов во всём объекте
      * @param int $object_id
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -317,6 +324,10 @@ class CountPdfController extends Controller
         return view('errors.badPdfExtension');
     }
 
+
+    /**
+     * для дебага
+     */
     public function test(){
 //        $this->pathToPdf = "/var/www/storage/app/public/II_bad_copy.pdf";
         $pdf = Storage::putFile('pdfs', '/var/www/storage/app/public/II_bad.pdf');

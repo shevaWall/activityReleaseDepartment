@@ -49,9 +49,13 @@
                 </li>--}}
             </ul>
             <div class="ui-widget">
-                <form class="d-flex">
-                    <input class="form-control me-2" id="searchObject" type="search" placeholder="Search" aria-label="Search">
-                    {{--                <button class="btn btn-outline-success" type="submit">Search</button>--}}
+                <form action="{{route('search.index')}}" class="d-flex">
+                    <input class="form-control me-2"
+                           id="searchObject"
+                           name="term"
+                           type="search"
+                           placeholder="Объект или номер заявки"
+                           aria-label="Search">
                 </form>
             </div>
         </div>

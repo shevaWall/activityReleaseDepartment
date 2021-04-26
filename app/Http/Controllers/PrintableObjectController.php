@@ -202,31 +202,6 @@ class PrintableObjectController extends Controller
             }
         }
 
-        /*foreach($obj[0]->countPdf as $countPdf){
-            foreach($countPdf->formats as $formatName => $format){
-                // если такого формата нет - добавляем и инициализируем первые значения
-                if(!array_key_exists($formatName, $a_formats)){
-                    if(isset($format->Colored))
-                        $a_formats[$formatName]['Colored'] = $format->Colored;
-                    if(isset($format->BW))
-                        $a_formats[$formatName]['BW'] = $format->BW;
-                }else{
-                    // если такой формат уже есть, то складываем циферЬки
-                    if(isset($format->Colored))
-                        if(isset($a_formats[$formatName]['Colored'])){
-                            $a_formats[$formatName]['Colored'] = $a_formats[$formatName]['Colored'] + $format->Colored;
-                        }else{
-                            $a_formats[$formatName]['Colored'] = $format->Colored;
-                        }
-                    if(isset($format->BW))
-                        if(isset($a_formats[$formatName]['BW'])){
-                            $a_formats[$formatName]['BW'] = $a_formats[$formatName]['BW'] + $format->BW;
-                        }else{
-                            $a_formats[$formatName]['BW'] = $format->BW;
-                        }
-                }
-            }
-        }*/
         ksort($a_formats);
 
         return view('objects.showPaperConsumption')
@@ -234,21 +209,5 @@ class PrintableObjectController extends Controller
                 'object' => $obj[0],
                 'formats' => $a_formats,
             ]);
-    }
-
-    /**
-     * для поиска
-     */
-    public function ajaxSearchObject()
-    {
-        $search = request()->query()['term'];
-        $objs = DB::table('printable_objects')->where('name', 'like', "%$search%")->select('id', 'name')->get();
-
-        $response = array();
-        foreach ($objs as $obj) {
-            $response[] = array('id' => $obj->id, 'name' => $obj->name);
-        }
-        echo json_encode($response);
-        exit;
     }
 }

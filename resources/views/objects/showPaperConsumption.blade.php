@@ -19,8 +19,9 @@
         <div class="col-auto">ИИ: @php ((!is_null($object->count_ii) ? print_r ($object->count_ii) : print_r(1) )) @endphp экз.</div>
     </div>
 
+    <div class="col-12 text-center h3 mt-5">Сводная таблица</div>
     <div class="table-responsive">
-        <table class="table table-striped">
+        <table class="table table-striped table-hover">
             <thead>
                 <tr>
                     <td>Формат</td>
