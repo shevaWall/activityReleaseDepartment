@@ -149,7 +149,6 @@ function recountPersents(compositGroup) {
     }
 }
 
-
 // аякс подсчет страниц pdf
 function ajaxCountFormats(element, file) {
     let fileName = file.name;
@@ -176,7 +175,6 @@ function ajaxCountFormats(element, file) {
             data: form_data,
             type: 'post',
             beforeSend: function () {
-                // $(element).siblings("input[type='button']").prop("disabled", true);
                 // очищаем поле с таблицей под новые данные
                 $(element).parents('tr').find('.formatsTable').remove();
                 // показываем спиннер, чтобы было видно, что процесс идёт
@@ -187,7 +185,6 @@ function ajaxCountFormats(element, file) {
                 }
             },
             success: function (msg) {
-                // $(element).siblings("input[type='button']").prop("disabled", false);
                 // сбрасываем скрытый input для загрузки файлов (если файл был загружен через проводник)
                 $(element).siblings('input[type="file"]').val('');
 
@@ -213,7 +210,6 @@ function ajaxCountFormats(element, file) {
                 $('#response').html(msg.responseText);
                 let badPdf_modal = new bootstrap.Modal(document.getElementById('badPdf_modal'));
 
-                // $(element).siblings("input[type='button']").prop("disabled", false);
                 // сбрасываем скрытый input для загрузки файлов (если файл был загружен через проводник)
                 $(element).siblings('input[type="file"]').val('');
                 // выключаем спиннер
@@ -255,7 +251,6 @@ function ajaxCountFormats(element, file) {
     }
 }
 
-
 // ajax сбрасываем посчитанные страницы PDF у определенного раздела (состава)
 function ajaxCompositRefresh(element) {
     let composit_id = parseInt($(element).parents('tr').attr('id').replace(/\D+/g, ""));
@@ -269,6 +264,39 @@ function ajaxCompositRefresh(element) {
             if ($(tableTbody).find('tr').length > 0) {
                 $(tableTbody).find('tr').remove();
             }
+        }
+    });
+}
+
+// для переименовывания элемента
+function dblclick_renameComposit(element){
+    let inpt = $(element).siblings('.renameComposit');
+    $([element, inpt]).toggleClass('d-none');
+}
+function completeRenameComposit(element){
+    let composit_id = parseInt($(element).parents('tr').attr('id').replace(/\D+/g, ""));
+    let cursorRenameComposit = $(element).parent('td').siblings('.cursorRenameComposit');
+    let inpt = $(element).parent('td');
+
+    $([cursorRenameComposit, inpt]).toggleClass('d-none');
+    $(cursorRenameComposit).text($(inpt).find('input').val());
+
+    let form_data = new FormData();
+    form_data.append('name', $(inpt).find('input').val());
+    form_data.append('_token', $(element).parents('form').find("input[name='_token']").val());
+
+    $.ajax({
+        type: 'post',
+        url: '/composit/ajaxRenameComposit/' + composit_id,
+        dataType: 'text',
+        cache: false,
+        mimeType: "multipart/form-data",
+        contentType: false,
+        processData: false,
+        data: form_data,
+
+        success: function (msg) {
+            console.log(msg);
         }
     });
 }

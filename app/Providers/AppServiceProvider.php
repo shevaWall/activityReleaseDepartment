@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // выводит в шапке в меню количество объектов по статусам
         $a_PrintableObjectsStatusesCount[5] = 0;
 
         $objs = PrintableObject::all();

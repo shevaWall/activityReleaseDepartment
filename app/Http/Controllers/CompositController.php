@@ -99,4 +99,12 @@ class CompositController extends Controller
         return $groupPersents;
     }
 
+    /**
+     * делает аякс запрос на переименовывание названия состава(раздела)
+     * @param int $composit_id - id состава(раздела)
+     */
+    public function ajaxRenameComposit(Request $r, int $composit_id){
+        Composit::findOrFail($composit_id)->update($r->all());
+    }
+
 }

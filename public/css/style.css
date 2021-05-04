@@ -43,3 +43,21 @@ div[id^='dropZone_'] {
 div[id^='dropZone_'].highlight {
     border-color: purple;
 }
+
+.cursorRenameComposit{
+    cursor: context-menu;
+}
+
+.renameComposit{
+    position: relative;
+}
+
+.completeRenaming{
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    right: 50px;
+    height: 30px;
+    width: 30px;
+    background: url('/storage/checkMark.svg') no-repeat 50% 50%;
+}

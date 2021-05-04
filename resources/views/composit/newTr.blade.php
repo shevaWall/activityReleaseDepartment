@@ -1,6 +1,10 @@
 <tr id="compositId_{{$composit->id}}">
     <th scope="row"></th>
-    <td>{{$composit->name}}</td>
+    <td ondblclick="dblclick_renameComposit(this)" class="cursorRenameComposit">{{$composit->name}}</td>
+    <td class="renameComposit d-none">
+        <input type="text" value="{{$composit->name}}">
+        <span class="completeRenaming" onclick="completeRenameComposit(this)"></span>
+    </td>
     <td>
         <p class="m-0 pointer {{ ($composit->completed == "Готов") ? 'completed' : 'uncompleted' }}"
            onclick="ajaxCompositChangeStatus(this)">

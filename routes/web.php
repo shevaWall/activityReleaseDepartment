@@ -97,6 +97,8 @@ Route::group([
         // аякс изменение статуса (готов/не готов) раздела (соства)
         Route::get("ajaxChangeCompositStatus/{composit_id}", [CompositController::class, "ajaxChangeCompositStatus"])
                 ->name('ajaxChangeCompositStatus');
+
+        Route::post('ajaxRenameComposit/{composit_id}', [CompositController::class, "ajaxRenameComposit"]);
 });
 
 /**

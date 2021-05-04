@@ -17,12 +17,23 @@ class SearchController extends Controller
     public function index(Request $request){
         $term = $request->input('term');
         $ajax = $request->input('ajax');
-        if(isset($term) && !is_null($term) && !isset($ajax)){
+        if(isset($term) && !is_null($term)){
 
             $objs = DB::table('printable_objects')
                 ->where('name', 'like', "%$term%")
                 ->orWhere('nomerZayavki', $term)
                 ->get();
+
+            // если это аякс запрос
+            if(isset($ajax)){
+                $r = array();
+
+                foreach($objs as $obj){
+                    array_push($r, ['label' => $obj->name, 'url'=>route('objects.composit', $obj->id)]);
+                }
+
+                return json_encode($r);
+            }
 
             if($objs->count() > 0){
                 return view('search.index')
@@ -31,19 +42,6 @@ class SearchController extends Controller
                 return view('search.index')
                     ->with('noFound', "По вашему запросу '$term' не удалоись ничего найти");
             }
-        }elseif(isset($ajax)){
-            $objs = DB::table('printable_objects')
-                ->where('name', 'like', "%$term%")
-                ->orWhere('nomerZayavki', $term)
-                ->select('id', 'name')
-                ->get();
-
-            $r = array();
-            foreach($objs as $obj){
-                array_push($r, ['label' => $obj->name, 'url'=>route('objects.composit', $obj->id)]);
-            }
-
-            return json_encode($r);
         }else{
             return view('search.index')
                 ->with('empty', "Ваш поисковый запрос пустой");
