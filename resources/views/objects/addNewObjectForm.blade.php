@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row my-5">
-        <h1 class="text-center">Настройки объекта</h1>
+        <h1 class="text-center">Настройки заявки</h1>
         <form action="{{route('objects.submit_form')}}" method="post" enctype="multipart/form-data">
             @csrf
             <div class="row mb-3">
@@ -22,7 +22,7 @@
             <div class="row mb-3">
                 <label for="inputNomerZayavki" class="col-sm-2 col-form-label">Номер заявки</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="inputNomerZayavki" name="nomerZayavki">
+                    <input type="text" class="form-control" id="inputNomerZayavki" name="nomerZayavki" placeholder="{{$maxNomerZayavki+1}}">
                 </div>
             </div>
 

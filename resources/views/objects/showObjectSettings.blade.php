@@ -8,7 +8,7 @@
             </a>
         </div>
         <div class="col-11 my-auto">
-            <h1 class="text-center">Настройки объекта</h1>
+            <h1 class="text-center">Настройки заявки</h1>
         </div>
 
         <form action="{{route('objects.submit_form')}}" method="post" enctype="multipart/form-data">

@@ -39,9 +39,14 @@ class AppServiceProvider extends ServiceProvider
                 }
                 $a_PrintableObjectsStatusesCount[5]++;
             }
-            for($status_id = 1; $status_id <=5; $status_id++){
+            for($status_id = 1; $status_id <= 5; $status_id++){
                 if(!key_exists($status_id, $a_PrintableObjectsStatusesCount))
                     $a_PrintableObjectsStatusesCount[$status_id] = 0;
+            }
+        }else{
+            // заглушечка, если ещё нет ни одного объекта
+            for($i=0; $i <=5; $i++){
+                $a_PrintableObjectsStatusesCount[$i] = 0;
             }
         }
 

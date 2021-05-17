@@ -48,11 +48,11 @@ Route::group([
         ->name('deleteObject');
 
     // отображение настроек объекта
-    Route::get("edit/{id}", [PrintableObjectController::class, "showObjectSettings"])
+    Route::get("{id}/edit", [PrintableObjectController::class, "showObjectSettings"])
         ->name('showObjectSettings');
 
     // навсегда удаляет объект из БД
-    Route::get("remove/{id}", [PrintableObjectController::class, "removeObject"])
+    Route::get("{id}-{status_id}/remove", [PrintableObjectController::class, "removeObject"])
             ->name('removeObject');
 
     // аякс изменение статуса объетк
@@ -60,7 +60,7 @@ Route::group([
             ->name('ajaxChangeObjectStatus');
 
     // отображение разделов (состава) объекта
-    Route::get("composit/{object_id}", [CompositController::class, "index"])
+    Route::get("{object_id}/composit", [CompositController::class, "index"])
             ->name('composit');
 
     // отображение сводной таблицы подсчитанных страниц

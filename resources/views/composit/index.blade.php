@@ -10,7 +10,7 @@
 
         <div class="col-11 my-auto">
             <h1 class="text-center">
-                {{$object->name}}
+                <a href="{{route('objects.showObjectSettings', $object->id)}}">{{$object->name}}</a>
             </h1>
         </div>
 

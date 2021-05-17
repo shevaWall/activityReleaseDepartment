@@ -49,7 +49,7 @@
                             </td>
                         @else
                             <td class="text-center my-auto">
-                                <a href="{{route('objects.removeObject', [$object->id])}}">
+                                <a href="{{route('objects.removeObject', [$object->id, $object->status_id])}}">
                                     <img class="img-fluid" style="width:32px;" src="/storage/trash.svg" alt="Удалить навсегда" title="Удалить навсегда">
                                 </a>
                             </td>

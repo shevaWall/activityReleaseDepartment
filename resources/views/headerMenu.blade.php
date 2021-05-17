@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light mainNavBar">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{route('index')}}">НаСуете</a>
+        <a class="navbar-brand" href="{{route('index')}}">PDF Page Counter</a>
         <button class="navbar-toggler"
                 type="button"
                 data-bs-toggle="collapse"
@@ -17,12 +17,14 @@
                 </li>
                 <li class="nav-item">
                     <div class="btn-group">
-                        <button type="button"
-                                class="btn btn-{{request()->routeIs('objects.*') ? 'success' : 'secondary'}}">
-                            <a class="nav-link p-0 text-white"
-                               aria-current="page"
-                               href="{{route('objects.index')}}">Объекты</a>
-                        </button>
+                        <a class="nav-link p-0 text-white"
+                           aria-current="page"
+                           href="{{route('objects.withStatus', 5)}}">
+                            <button type="button"
+                                    class="btn btn-{{request()->routeIs('objects.*') ? 'success' : 'secondary'}} fixBorderRadius">
+                                Заявки
+                            </button>
+                        </a>
                         <button type="button"
                                 class="btn btn-{{request()->routeIs('objects.*') ? 'success' : 'secondary'}} dropdown-toggle dropdown-toggle-split"
                                 data-bs-toggle="dropdown"

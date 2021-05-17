@@ -17,6 +17,7 @@ class SearchController extends Controller
     public function index(Request $request){
         $term = $request->input('term');
         $ajax = $request->input('ajax');
+        $error = 0;
         if(isset($term) && !is_null($term)){
 
             $objs = DB::table('printable_objects')
@@ -40,7 +41,7 @@ class SearchController extends Controller
                     ->with('objs', $objs);
             }else{
                 return view('search.index')
-                    ->with('noFound', "По вашему запросу '$term' не удалоись ничего найти");
+                    ->with('noFound', "По вашему запросу '$term' не удалось ничего найти");
             }
         }else{
             return view('search.index')

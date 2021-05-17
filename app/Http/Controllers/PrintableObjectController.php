@@ -34,7 +34,13 @@ class PrintableObjectController extends Controller
      */
     public function addNewObjectForm()
     {
-        return view('objects.addNewObjectForm');
+        $maxNomerZayavki = DB::table('printable_objects')->max('nomerZayavki');
+
+        if(is_null($maxNomerZayavki))
+            $maxNomerZayavki=0;
+
+        return view('objects.addNewObjectForm')
+            ->with('maxNomerZayavki', $maxNomerZayavki);
     }
 
     /**
@@ -45,8 +51,8 @@ class PrintableObjectController extends Controller
     public function addNewObjectSubmit(Request $request)
     {
         /*
-         * todo: добавить свой валидатор Request и загрузку файлов
-         * как минимум проверка на уникальность связки полей "название" и "шифр". И если идентичные уже есть - не позволять создавать
+         * todo: добавить свой валидатор Request
+         * проверка на заполненные поля
          * */
 //        todo: сделать загрузку заявки на распечатку
         if (is_null($request->id)) {
@@ -95,6 +101,8 @@ class PrintableObjectController extends Controller
                 'objects' => $objs,
                 'statuses' => Status::all()
             ]);
+
+
     }
 
     /**
@@ -102,14 +110,14 @@ class PrintableObjectController extends Controller
      * @param int $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function removeObject(int $id)
+    public function removeObject(int $id, int $status_id)
     {
         $obj = PrintableObject::findOrFail($id);
         $obj->countPdf()->delete();
         $obj->composits()->delete();
         $obj->delete();
 
-        return redirect()->route('objects.index');
+        return redirect()->route('objects.withStatus', $status_id);
     }
 
     /**
