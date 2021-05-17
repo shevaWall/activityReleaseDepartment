@@ -61,3 +61,7 @@ div[id^='dropZone_'].highlight {
     width: 30px;
     background: url('/storage/checkMark.svg') no-repeat 50% 50%;
 }
+
+.latestAddedObjects a{
+    text-decoration:none;
+}

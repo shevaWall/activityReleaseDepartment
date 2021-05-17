@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CompositController;
 use App\Http\Controllers\CountPdfController;
+use App\Http\Controllers\IndexPageController;
 use App\Http\Controllers\PrintableObjectController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
@@ -18,9 +19,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/', function () {
-    return view('index');
-})->name('index');
+Route::get("/", [IndexPageController::class, "index"])
+        ->name('index');
 
 /**
  * роуты для работы с объектами
