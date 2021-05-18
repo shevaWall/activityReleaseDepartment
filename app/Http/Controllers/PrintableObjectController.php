@@ -17,6 +17,7 @@ class PrintableObjectController extends Controller
         $objs = PrintableObject::where('status_id', 1)
             ->with('status')
             ->with('composits')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         $objs = $this->countPercent($objs);
@@ -89,9 +90,11 @@ class PrintableObjectController extends Controller
     public function withStatus(int $status_id)
     {
         if ($status_id != 5) {
-            $objs = PrintableObject::where('status_id', $status_id)->get();
+            $objs = PrintableObject::where('status_id', $status_id)
+                ->orderBy('created_at', 'desc')
+                ->get();
         } else {
-            $objs = PrintableObject::all();
+            $objs = PrintableObject::orderBy('created_at', 'desc')->get();
         }
 
         $objs = $this->countPercent($objs);

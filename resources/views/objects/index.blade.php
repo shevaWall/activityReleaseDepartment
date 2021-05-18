@@ -20,13 +20,19 @@
                         <th scope="row">{{++$k}}</th>
                         <td>
                             <a href="{{route('objects.composit', $object->id)}}">
-                            {{$object->name}}</td>
-                        </a>
+                                {{$object->name}}
+                            </a>
+                            @if(strlen($object->description) != 0 && !is_null($object->description ))
+                                <p class="text-secondary mb-0">Примечание: {{$object->description}}</p>
+                            @endif
+                            <p class="text-secondary">Дата создания: {{$object->created_at->format('d.m.y')}}</p>
+                        </td>
                         <td>
                             {{$object->composits['persents']}} %
                         </td>
-                        <td>
-                            <select class="form-select" id="objectStatusId_{{$object->id}}" onchange="ajaxChangeObjectStatus(this)">
+                        <td class="fixMinWidth">
+                            <select class="form-select" id="objectStatusId_{{$object->id}}"
+                                    onchange="ajaxChangeObjectStatus(this)">
                                 @foreach($statuses as $status)
                                     <option
                                         value="{{$status->id}}"
@@ -35,10 +41,11 @@
                                 @endforeach
                             </select>
                         </td>
-                        <td>{{$object->deadline}}</td>
+                        <td class="fixMinWidth">{{$object->deadline}}</td>
                         <td class="text-center my-auto">
                             <a href="{{route('objects.showObjectSettings', [$object->id])}}">
-                                <img class="img-fluid" style="width:32px;" src="/storage/pencil.svg" alt="Редактировать">
+                                <img class="img-fluid" style="width:32px;" src="/storage/pencil.svg"
+                                     alt="Редактировать">
                             </a>
                         </td>
                         @if(!request()->is('objects/withStatus/4'))
@@ -50,7 +57,8 @@
                         @else
                             <td class="text-center my-auto">
                                 <a href="{{route('objects.removeObject', [$object->id, $object->status_id])}}">
-                                    <img class="img-fluid" style="width:32px;" src="/storage/trash.svg" alt="Удалить навсегда" title="Удалить навсегда">
+                                    <img class="img-fluid" style="width:32px;" src="/storage/trash.svg"
+                                         alt="Удалить навсегда" title="Удалить навсегда">
                                 </a>
                             </td>
                         @endif
@@ -61,9 +69,9 @@
         </div>
     @endif
 
-<div class="row">
-    <div class="col-6">
-        <a href="{{route('objects.show_form')}}" class="btn btn-primary">Добавить объект</a>
+    <div class="row">
+        <div class="col-6">
+            <a href="{{route('objects.show_form')}}" class="btn btn-primary">Добавить объект</a>
+        </div>
     </div>
-</div>
 @endsection

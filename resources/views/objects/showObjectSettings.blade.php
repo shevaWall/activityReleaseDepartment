@@ -8,7 +8,7 @@
             </a>
         </div>
         <div class="col-11 my-auto">
-            <h1 class="text-center">Настройки заявки</h1>
+            <h1 class="text-center">Настройки заявки - <a href="{{route('objects.composit', $object->id)}}">перейти к составу</a> </h1>
         </div>
 
         <form action="{{route('objects.submit_form')}}" method="post" enctype="multipart/form-data">
@@ -18,6 +18,13 @@
                 <label for="inputObjectName" class="col-sm-2 col-form-label">Название</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="inputObjectName" name="name" value="{{$object->name}}">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label for="inputObjectDescription" class="col-sm-2 col-form-label">Примечание</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputObjectDescription" name="description" value="{{$object->description}}">
                 </div>
             </div>
 
@@ -35,12 +42,12 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
+            {{--<div class="row mb-3">
                 <label for="inputFile" class="col-sm-2 col-form-label">Скан заявки</label>
                 <div class="col-sm-10">
                     <input class="form-control" type="file" id="inputFile" name="scan_img" value="{{$object->scan_img}}">
                 </div>
-            </div>
+            </div>--}}
 
             <div class="row mb-3">
                 <label for="inputObjectOwner" class="col-sm-2 col-form-label">Чей объект</label>

@@ -56,7 +56,7 @@
                            id="searchObject"
                            name="term"
                            type="text"
-                           placeholder="Объект или номер заявки"
+                           placeholder="Название или № заявки"
                            aria-label="Search">
                 </form>
             </div>

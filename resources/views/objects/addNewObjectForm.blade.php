@@ -13,6 +13,13 @@
             </div>
 
             <div class="row mb-3">
+                <label for="inputObjectDescription" class="col-sm-2 col-form-label">Примечание</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="inputObjectDescription" name="description">
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <label for="inputCipher" class="col-sm-2 col-form-label">Шифр объекта</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="inputCipher" name="cipher">
@@ -26,12 +33,12 @@
                 </div>
             </div>
 
-            <div class="row mb-3">
+            {{--<div class="row mb-3">
                 <label for="inputFile" class="col-sm-2 col-form-label">Скан заявки</label>
                 <div class="col-sm-10">
                     <input class="form-control" type="file" id="inputFile" name="scan_img">
                 </div>
-            </div>
+            </div>--}}
 
             <div class="row mb-3">
                 <label for="inputObjectOwner" class="col-sm-2 col-form-label">Чей объект</label>
