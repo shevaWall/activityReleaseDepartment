@@ -37,8 +37,8 @@ class PrintableObjectController extends Controller
     {
         $maxNomerZayavki = DB::table('printable_objects')->max('nomerZayavki');
 
-        if(is_null($maxNomerZayavki))
-            $maxNomerZayavki=0;
+        if (is_null($maxNomerZayavki))
+            $maxNomerZayavki = 0;
 
         return view('objects.addNewObjectForm')
             ->with('maxNomerZayavki', $maxNomerZayavki);
@@ -187,25 +187,37 @@ class PrintableObjectController extends Controller
                     foreach ($countPdf->formats as $formatName => $format) {
                         // если такого формата нет - добавляем и инициализируем первые значения
                         if (!array_key_exists($formatName, $a_formats)) {
-                            if (isset($format->Colored))
+                            if (isset($format->Colored)) {
                                 $a_formats[$formatName]['Colored'] = $format->Colored * $multypler;
-                            if (isset($format->BW))
+
+                                (isset($a_formats[$formatName]['total']))
+                                    ? $a_formats[$formatName]['total'] += $format->Colored * $multypler
+                                    : $a_formats[$formatName]['total'] = $format->Colored * $multypler;
+                            }
+                            if (isset($format->BW)) {
                                 $a_formats[$formatName]['BW'] = $format->BW * $multypler;
+
+                                (isset($a_formats[$formatName]['total']))
+                                    ? $a_formats[$formatName]['total'] += $format->BW * $multypler
+                                    : $a_formats[$formatName]['total'] = $format->BW * $multypler;
+                            }
                         } else {
                             // если такой формат уже есть, то складываем циферЬки
                             if (isset($format->Colored)) {
                                 if (isset($a_formats[$formatName]['Colored'])) {
-                                    $a_formats[$formatName]['Colored'] = $a_formats[$formatName]['Colored'] + ($format->Colored * $multypler);
+                                    $a_formats[$formatName]['Colored'] += ($format->Colored * $multypler);
                                 } else {
                                     $a_formats[$formatName]['Colored'] = $format->Colored * $multypler;
                                 }
+                                $a_formats[$formatName]['total'] += ($format->Colored * $multypler);
                             }
                             if (isset($format->BW)) {
                                 if (isset($a_formats[$formatName]['BW'])) {
-                                    $a_formats[$formatName]['BW'] = $a_formats[$formatName]['BW'] + ($format->BW * $multypler);
+                                    $a_formats[$formatName]['BW'] += ($format->BW * $multypler);
                                 } else {
                                     $a_formats[$formatName]['BW'] = $format->BW * $multypler;
                                 }
+                                $a_formats[$formatName]['total'] += ($format->BW * $multypler);
                             }
                         }
                     }

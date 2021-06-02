@@ -14,13 +14,13 @@
     <td>
         <p class="ajaxDeleteComposit pointer"
            onclick="ajaxCompositRefresh(this)">
-            <img src="/storage/restore.svg" alt="Сбросить" title="Сбросить"/>
+            <img src="/images/restore.svg" alt="Сбросить" title="Сбросить"/>
         </p>
     </td>
     <td>
         <p class="ajaxDeleteComposit pointer"
            onclick="ajaxDeleteComposit(this)">
-            <img src="/storage/trash.svg" alt="Удалить" title="Удалить"/>
+            <img src="/images/trash.svg" alt="Удалить" title="Удалить"/>
         </p>
     </td>
     <td class="newTableHere">

@@ -43,6 +43,10 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item"
                                    href="{{route('objects.withStatus', 5)}}">Все (<span id="inAllCount">{{$cntPrntblObjsStatuses[5]}}</span>)</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a href="{{route('objects.show_form')}}" class="dropdown-item">Добавить заявку</a>
+                            </li>
                         </ul>
                     </div>
                 </li>

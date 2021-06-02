@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-1 my-auto text-center">
             <a href="{{route('objects.index')}}">
-                <img class="img-fluid" src="/storage/backArrow.svg" alt="Назад" title="Назад">
+                <img class="img-fluid" src="/images/backArrow.svg" alt="Назад" title="Назад">
             </a>
         </div>
 

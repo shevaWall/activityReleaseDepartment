@@ -44,20 +44,20 @@
                         <td class="fixMinWidth">{{$object->deadline}}</td>
                         <td class="text-center my-auto">
                             <a href="{{route('objects.showObjectSettings', [$object->id])}}">
-                                <img class="img-fluid" style="width:32px;" src="/storage/pencil.svg"
+                                <img class="img-fluid" style="width:32px;" src="/images/pencil.svg"
                                      alt="Редактировать">
                             </a>
                         </td>
                         @if(!request()->is('objects/withStatus/4'))
                             <td class="text-center my-auto">
                                 <a href="{{route('objects.ajaxChangeObjectStatus', [$object->id, 4])}}">
-                                    <img class="img-fluid" style="width:32px;" src="/storage/delete.svg" alt="Удалить">
+                                    <img class="img-fluid" style="width:32px;" src="/images/delete.svg" alt="Удалить">
                                 </a>
                             </td>
                         @else
                             <td class="text-center my-auto">
                                 <a href="{{route('objects.removeObject', [$object->id, $object->status_id])}}">
-                                    <img class="img-fluid" style="width:32px;" src="/storage/trash.svg"
+                                    <img class="img-fluid" style="width:32px;" src="/images/trash.svg"
                                          alt="Удалить навсегда" title="Удалить навсегда">
                                 </a>
                             </td>

@@ -5,7 +5,7 @@
         <div class="col-6 latestAddedObjects py-5 ">
             <div class="row card text-dark">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Последние добавленные объекты</h5>
+                    <h5 class="card-title text-center">Последние добавленные заявки</h5>
                     @if($latestObjects->count() != 0)
                         <ul class="list-group list-group-flush">
                             @foreach($latestObjects as $latestObject)

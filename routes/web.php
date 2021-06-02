@@ -33,21 +33,21 @@ Route::group([
     Route::get("/", [PrintableObjectController::class, "index"])
         ->name('index');
 
-    // выводит объекты по статусам (в работе, на паузе, сданы, удалены, все)
+    // выводит заявки по статусам (в работе, на паузе, сданы, удалены, все)
     Route::get("withStatus/{status_id}", [PrintableObjectController::class, "withStatus"])
             ->name('withStatus');
 
-    // форма добавление и обработчик для нового объекта
+    // форма добавление и обработчик для нового заявки
     Route::get("add", [PrintableObjectController::class, "addNewObjectForm"])
         ->name('show_form');
     Route::post("add", [PrintableObjectController::class, "addNewObjectSubmit"])
         ->name('submit_form');
 
-    // аякс измененение статуса объекта на "удалён"
+    // аякс измененение статуса заявки на "удалён"
     Route::get('delete/{object_id}', [PrintableObjectController::class, "ajaxChangeObjectStatus"])
         ->name('deleteObject');
 
-    // отображение настроек объекта
+    // отображение настроек заявки
     Route::get("{id}/edit", [PrintableObjectController::class, "showObjectSettings"])
         ->name('showObjectSettings');
 
@@ -55,11 +55,11 @@ Route::group([
     Route::get("{id}-{status_id}/remove", [PrintableObjectController::class, "removeObject"])
             ->name('removeObject');
 
-    // аякс изменение статуса объетк
+    // аякс изменение статуса заявки
     Route::get("changeObjectStatus/{object_id}/{status_id}", [PrintableObjectController::class, "ajaxChangeObjectStatus"])
             ->name('ajaxChangeObjectStatus');
 
-    // отображение разделов (состава) объекта
+    // отображение разделов (состава) заявки
     Route::get("{object_id}/composit", [CompositController::class, "index"])
             ->name('composit');
 

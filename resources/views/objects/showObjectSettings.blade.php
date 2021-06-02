@@ -4,7 +4,7 @@
     <div class="row my-5">
         <div class="col-1 my-auto text-center">
             <a href="{{route('objects.index')}}">
-                <img class="img-fluid" src="/storage/backArrow.svg" alt="Назад" title="Назад">
+                <img class="img-fluid" src="/images/backArrow.svg" alt="Назад" title="Назад">
             </a>
         </div>
         <div class="col-11 my-auto">
@@ -113,9 +113,6 @@
             <div class="row">
                 <div class="col my-auto text-center">
                     <a href="{{route('objects.index')}}">Отмена</a>
-                </div>
-                <div class="col my-auto text-center">
-                    <a class="text-danger" href="{{route('objects.deleteObject', [$object->id])}}">Удалить</a>
                 </div>
                 <div class="col my-auto text-center">
                     <button type="submit" class="btn btn-success">Сохранить</button>
