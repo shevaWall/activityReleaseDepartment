@@ -9,7 +9,7 @@
     @if(isset($objs))
         <ol>
             @foreach($objs as $obj)
-                <li><a href="{{route('objects.composit', $obj->id)}}">{{$obj->name}}</a> </li>
+                <li><a href="{{route('objects.composit', $obj->id)}}">{{$obj->name}} (№{{$obj->nomerZayavki}})</a> </li>
             @endforeach
         </ol>
     @endif

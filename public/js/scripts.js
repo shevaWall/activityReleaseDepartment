@@ -38,6 +38,7 @@ $(document).ready(function () {
         },
         minLength: 2
     }).autocomplete( "instance" )._renderItem = function( ul, item ) {
+        console.log(item);
         return $("<li>")
             .append("<div><a href='"+item.url+"'>" + item.label+"</a></div>")
             .appendTo(ul);

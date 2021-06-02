@@ -73,3 +73,8 @@ nav.mainNavBar .fixBorderRadius{
 .fixMinWidth{
     min-width: 150px;
 }
+
+/*чиним максимальную ширину при autocomplete в поиске*/
+.ui-widget-content.ui-autocomplete{
+    max-width: 210px;
+}

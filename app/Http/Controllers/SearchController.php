@@ -18,7 +18,7 @@ class SearchController extends Controller
         $term = $request->input('term');
         $ajax = $request->input('ajax');
         $error = 0;
-        if(isset($term) && !is_null($term)){
+        if(isset($term)){
 
             $objs = DB::table('printable_objects')
                 ->where('name', 'like', "%$term%")
@@ -30,7 +30,11 @@ class SearchController extends Controller
                 $r = array();
 
                 foreach($objs as $obj){
-                    array_push($r, ['label' => $obj->name, 'url'=>route('objects.composit', $obj->id)]);
+                    (!is_null($obj->nomerZayavki)) ?
+                        $objName = $obj->name." (№$obj->nomerZayavki)":
+                        $objName = $obj->name;
+
+                    array_push($r, ['label' => $objName, 'url'=>route('objects.composit', $obj->id)]);
                 }
 
                 return json_encode($r);
