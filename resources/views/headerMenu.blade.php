@@ -50,6 +50,9 @@
                         </ul>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{request()->routeIs('warehouse.*') ? 'active' : ''}}" aria-current="page" href="{{route('warehouse.index')}}">Склад</a>
+                </li>
                 {{--<li class="nav-item">
                     <a class="nav-link {{request()->routeIs('settings.index') ? 'active' : ''}}" aria-current="page" href="{{route('settings.index')}}">Настройки</a>
                 </li>--}}

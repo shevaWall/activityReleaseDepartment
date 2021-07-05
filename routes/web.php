@@ -5,6 +5,8 @@ use App\Http\Controllers\CountPdfController;
 use App\Http\Controllers\IndexPageController;
 use App\Http\Controllers\PrintableObjectController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\WarehouseTransactionsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -129,4 +131,21 @@ Route::group([
 
     // для дебага
     Route::get("test", [CountPdfController::class, "test"]);
+});
+
+Route::group([
+//    'middleware'=>  '',
+    'prefix'    =>  'warehouse',
+    'as'        =>  'warehouse.',
+], function(){
+        Route::get("/", [WarehouseController::class, "index"])
+                ->name('index');
+
+        Route::any("updateWarehouseActualData", [WarehouseController::class, "ajaxUpdateWarehouseActualData"])
+                ->name('updateWarehouseActualData');
+
+        Route::get("ajaxAddNewTr", [WarehouseController::class, "ajaxAddNewTr"]);
+        Route::get("ajaxDeleteItem/{warehouse_id}", [WarehouseController::class, "ajaxDeleteItem"]);
+
+        Route::get("ajaxMoreTransaction/{lastTransactionId}", [WarehouseTransactionsController::class, "ajaxMoreTransaction"]);
 });

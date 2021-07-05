@@ -78,3 +78,32 @@ nav.mainNavBar .fixBorderRadius{
 .ui-widget-content.ui-autocomplete{
     max-width: 210px;
 }
+
+.editPencil{
+    position: relative;
+    left: 10px;
+    cursor: pointer;
+}
+
+.warehouseActual td{
+    width: 245px;
+}
+
+.addCircleBtn{
+    border: 1px solid black;
+    border-radius: 30px;
+    width: 30px;
+    height: 30px;
+    display: block;
+    text-align: center;
+    position: relative;
+    line-height: 27px;
+    cursor: pointer;
+}
+.addCircleBtn:hover{
+    box-shadow: 0px 1px 5px 0px #00000080;
+}
+
+.transactionsTable td{
+    vertical-align: middle;
+}

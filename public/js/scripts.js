@@ -37,13 +37,37 @@ $(document).ready(function () {
             });
         },
         minLength: 2
-    }).autocomplete( "instance" )._renderItem = function( ul, item ) {
-        console.log(item);
+    }).autocomplete("instance")._renderItem = function (ul, item) {
         return $("<li>")
-            .append("<div><a href='"+item.url+"'>" + item.label+"</a></div>")
+            .append("<div><a href='" + item.url + "'>" + item.label + "</a></div>")
             .appendTo(ul);
     };
 
+    // ajax подзагрузка списка транзацкий при прокрутке
+    $(document).on('scroll', function () {
+        let ajaxMoreTransactions = $('.ajaxMoreTransactions');
+        if($(ajaxMoreTransactions).length !== 0){
+
+            let ajaxMoreTransactionsOffset = $(ajaxMoreTransactions).offset().top;
+            let documentScroll = $(document).scrollTop() + $(window).height();
+            let insertAjaxTransaction = $('.transactionsTable').children('tbody');
+            let lastTransactionId = $(document).find('.transactionsTable').children('tbody').children('tr').last().attr('data-transaction-id');
+
+            if (documentScroll >= ajaxMoreTransactionsOffset && !$(ajaxMoreTransactions).hasClass('ajaxOngoing')) {
+                $.ajax({
+                    type: 'get',
+                    url: '/warehouse/ajaxMoreTransaction/' + lastTransactionId,
+                    beforeSend: function(){
+                        $(ajaxMoreTransactions).addClass('ajaxOngoing');
+                    },
+                    success: function (msg) {
+                        $(insertAjaxTransaction).append(msg);
+                        $(ajaxMoreTransactions).removeClass('ajaxOngoing');
+                    }
+                });
+            }
+        }
+    });
 });
 
 
@@ -270,11 +294,12 @@ function ajaxCompositRefresh(element) {
 }
 
 // для переименовывания элемента
-function dblclick_renameComposit(element){
+function dblclick_renameComposit(element) {
     let inpt = $(element).siblings('.renameComposit');
     $([element, inpt]).toggleClass('d-none');
 }
-function completeRenameComposit(element){
+
+function completeRenameComposit(element) {
     let composit_id = parseInt($(element).parents('tr').attr('id').replace(/\D+/g, ""));
     let cursorRenameComposit = $(element).parent('td').siblings('.cursorRenameComposit');
     let inpt = $(element).parent('td');
@@ -300,4 +325,160 @@ function completeRenameComposit(element){
             console.log(msg);
         }
     });
+}
+
+// редактирование материала актуального склада
+function editWarehouseItem(element) {
+    let row = $(element).parents('tr');
+    let warehouseId = $(row).attr('data-warehouse-item');
+    let a_warehouseText = $(row).find('.warehouse-text');
+    let a_inputs = $(row).find('input');
+    let token = $(element).parents('tbody').find("input[name='_token']").val();
+    let changedFlag = false;
+    let notEmptyField = true;
+
+    // срабатывает, если input был виден и его предстоит скрыть
+    if (!$(a_inputs[0]).hasClass('d-none')) {
+        for (let i = 0; i < a_inputs.length; i++) {
+            // если есть изменения, то меняем флаг
+            if ($(a_warehouseText[i]).text() !== $(a_inputs[i]).val())
+                changedFlag = true;
+
+            $(a_warehouseText[i]).text($(a_inputs[i]).val());
+
+            // если какое-то поле пустое - не пропускаем на аякс
+            if ($(a_warehouseText[i]).text() == '' || $(a_inputs[i]).val() == '')
+                notEmptyField = false;
+        }
+
+        // подготавливаем и отправляем данные о изменении данных на актуальном складе,
+        // отправляем только если были изменения
+        if (changedFlag && notEmptyField) {
+            let form_data = new FormData();
+            form_data.append(' id', warehouseId);
+            form_data.append('material', $(a_warehouseText[0]).text());
+            form_data.append('quantity', $(a_warehouseText[1]).text());
+            form_data.append('_token', token);
+
+            $.ajax({
+                type: 'post',
+                url: '/warehouse/updateWarehouseActualData/',
+                dataType: 'text',
+                cache: false,
+                mimeType: "multipart/form-data",
+                contentType: false,
+                processData: false,
+                data: form_data,
+
+                success: function (msg) {
+                    // $('.response').html(msg);
+                    // добавляем запись в таблицу транзакций
+                    let tbody = $('.transactionsTable').find('tbody');
+
+                    if ($(tbody).find('tr').length === 0) {
+                        $(tbody).append(msg);
+                    } else {
+                        $(tbody).find('tr').first().before(msg);
+                    }
+
+                    // показываем кнопку добавление нового материала (см function addWarehouseItem())
+                    $('.addCircleBtn').removeClass('d-none');
+                }
+            });
+        }
+    }
+
+    // если после редактирования нет пустых полей, то переключаемся.
+    if (notEmptyField) {
+        $(row).find('.warehouse-text, input').toggleClass('d-none');
+
+        // фокусируемся на первом инпуте для удобства
+        if (!$(row).find('input').hasClass('d-none')) {
+            let focusOnInput = $(row).find('input').first();
+            focusOnInput.focus();
+            focusOnInput[0].selectionStart = focusOnInput.val().length;
+
+            // добавляем autocomplete, чтобы исключить очепятки
+            let availableMaterials = [
+                "Бумага А4",
+                "Бумага А3",
+                "Рулонная бумага 841",
+                "Рулонная бумага 594",
+                "Рулонная бумага 420",
+                "Рулонная бумага 297",
+                "Пластик",
+                "Картон",
+                "CD",
+                "DVD",
+                "Короб архивный"
+            ];
+            $(focusOnInput).autocomplete({
+                source: availableMaterials,
+            })
+        }
+    } else {
+        // если есть пустое поле - фокусируемся на нём
+        $.each($(row).find('input'), function (i, element) {
+            if ($(element).val() == '') {
+                $(element).focus();
+            }
+        });
+    }
+}
+
+// добавление нового материала в актуальный склад
+function addWarehouseItem(element) {
+    let tbody = $(element).parents('tbody');
+
+    $(tbody).find('tr:last').before(function () {
+        $.ajax({
+            url: '/warehouse/ajaxAddNewTr/',
+            type: 'get',
+            success: function (msg) {
+                let lastTr = $(tbody).find('tr').last();
+                $(lastTr).before(msg);
+            }
+        })
+    });
+
+    // скрываем кнопку добавление нового материала, чтобы не получалось так, что создают много пустых строк и
+    // можно было очевидно присвоить айди нового материала к конкретной строке
+    $('.addCircleBtn').addClass('d-none');
+}
+
+// удаление материала в актуальном складе
+function deleteWarehouseItem(element) {
+    let tr = $(element).parents('tr');
+    let warehouseItem_id = $(tr).attr('data-warehouse-item');
+
+    if (warehouseItem_id !== '0') {
+        $.ajax({
+            url: '/warehouse/ajaxDeleteItem/' + warehouseItem_id,
+            type: 'get',
+            success: function (msg) {
+                $('.transactionsTable').find('tbody').find('tr').first().before(msg);
+                // console.log(msg);
+                $(tr).remove();
+            }
+        })
+    } else {
+        $(tr).remove();
+        // если сначала нажали на кнопку добавление нового материала, а потом вдруг передумали и решили удалить эту строку
+        if ($('.addCircleBtn').hasClass('d-none'))
+            $('.addCircleBtn').removeClass('d-none');
+    }
+}
+
+
+// кнопка "показать итог" на странице сводной информации о количестве листов
+function showTotalPaperConsumption(element) {
+    switch ($(element).text()) {
+        case 'Показать итого':
+            $(element).text('Скрыть итого');
+            break;
+        case 'Скрыть итого':
+            $(element).text('Показать итого');
+            break;
+    }
+    $('.tablePaperConsumption').find('.toggleTotal').toggleClass('d-none');
 }

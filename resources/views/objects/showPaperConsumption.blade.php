@@ -26,14 +26,19 @@
     </div>
 
     <div class="col-12 text-center h3 mt-5">Сводная таблица</div>
+    <div class="row justify-content-end">
+        <div class="col-auto">
+            <div class="btn border-warning" onclick="showTotalPaperConsumption(this)">Показать итого</div>
+        </div>
+    </div>
     <div class="table-responsive">
-        <table class="table table-striped table-hover">
+        <table class="table table-striped table-hover tablePaperConsumption">
             <thead>
             <tr>
                 <td>Формат</td>
                 <td>Цветных</td>
                 <td>Черно-белых</td>
-                <td>Итого</td>
+                <td class="toggleTotal d-none">Итого</td>
             </tr>
             </thead>
             <tbody>
@@ -50,7 +55,7 @@
                             {{$format['BW']}}
                         @endif
                     </td>
-                    <td>
+                    <td class="toggleTotal d-none">
                         {{$format['total']}}
                     </td>
                 </tr>
