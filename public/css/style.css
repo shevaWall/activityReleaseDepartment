@@ -1,3 +1,7 @@
+body{
+    background-color: #ebebeb;
+}
+
 tbody[id^="compositGroup_"] img {
     width: 25px;
 }

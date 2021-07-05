@@ -39,7 +39,7 @@ $(document).ready(function () {
         minLength: 2
     }).autocomplete("instance")._renderItem = function (ul, item) {
         return $("<li>")
-            .append("<div><a href='" + item.url + "'>" + item.label + "</a></div>")
+            .append("<a class='d-block' href='" + item.url + "'><div>" + item.label + "</div></a>")
             .appendTo(ul);
     };
 

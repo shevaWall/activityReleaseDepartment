@@ -19,7 +19,7 @@
                     <div class="btn-group">
                         <a class="nav-link p-0 text-white"
                            aria-current="page"
-                           href="{{route('objects.withStatus', 5)}}">
+                           href="{{route('objects.withStatus', 1)}}">
                             <button type="button"
                                     class="btn btn-{{request()->routeIs('objects.*') ? 'success' : 'secondary'}} fixBorderRadius">
                                 Заявки
