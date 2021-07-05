@@ -63,4 +63,34 @@
             </tbody>
         </table>
     </div>
+
+    <div class="col-12 text-center h3 mt-5">Для одного экземляра</div>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover tablePaperConsumptionOnce">
+            <thead>
+            <tr>
+                <td>Формат</td>
+                <td>Цветных</td>
+                <td>Черно-белых</td>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($formats as $formatName => $format)
+                <tr>
+                    <td>{{$formatName}}</td>
+                    <td>
+                        @if(isset($format['Colored_once']))
+                            {{$format['Colored_once']}}
+                        @endif
+                    </td>
+                    <td>
+                        @if(isset($format['BW_once']))
+                            {{$format['BW_once']}}
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
 @endsection

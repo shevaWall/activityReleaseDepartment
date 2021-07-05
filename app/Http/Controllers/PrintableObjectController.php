@@ -189,6 +189,7 @@ class PrintableObjectController extends Controller
                         if (!array_key_exists($formatName, $a_formats)) {
                             if (isset($format->Colored)) {
                                 $a_formats[$formatName]['Colored'] = $format->Colored * $multypler;
+                                $a_formats[$formatName]['Colored_once'] = $format->Colored;
 
                                 (isset($a_formats[$formatName]['total']))
                                     ? $a_formats[$formatName]['total'] += $format->Colored * $multypler
@@ -196,6 +197,7 @@ class PrintableObjectController extends Controller
                             }
                             if (isset($format->BW)) {
                                 $a_formats[$formatName]['BW'] = $format->BW * $multypler;
+                                $a_formats[$formatName]['BW_once'] = $format->BW;
 
                                 (isset($a_formats[$formatName]['total']))
                                     ? $a_formats[$formatName]['total'] += $format->BW * $multypler
@@ -206,16 +208,20 @@ class PrintableObjectController extends Controller
                             if (isset($format->Colored)) {
                                 if (isset($a_formats[$formatName]['Colored'])) {
                                     $a_formats[$formatName]['Colored'] += ($format->Colored * $multypler);
+                                    $a_formats[$formatName]['Colored_once'] += $format->Colored;
                                 } else {
                                     $a_formats[$formatName]['Colored'] = $format->Colored * $multypler;
+                                    $a_formats[$formatName]['Colored_once'] = $format->Colored;
                                 }
                                 $a_formats[$formatName]['total'] += ($format->Colored * $multypler);
                             }
                             if (isset($format->BW)) {
                                 if (isset($a_formats[$formatName]['BW'])) {
                                     $a_formats[$formatName]['BW'] += ($format->BW * $multypler);
+                                    $a_formats[$formatName]['BW_once'] += $format->BW;
                                 } else {
                                     $a_formats[$formatName]['BW'] = $format->BW * $multypler;
+                                    $a_formats[$formatName]['BW_once'] = $format->BW;
                                 }
                                 $a_formats[$formatName]['total'] += ($format->BW * $multypler);
                             }
