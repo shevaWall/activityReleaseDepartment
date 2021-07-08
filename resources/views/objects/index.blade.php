@@ -11,7 +11,7 @@
                     <th scope="col">Готовность</th>
                     <th scope="col">Статус</th>
                     <th scope="col">Срок сдачи</th>
-                    <th scope="col" colspan="2" class="text-center">Действия</th>
+                    <th scope="col" colspan="3" class="text-center">Действия</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -25,7 +25,8 @@
                             @if(strlen($object->description) != 0 && !is_null($object->description ))
                                 <p class="text-secondary mb-0">Примечание: {{$object->description}}</p>
                             @endif
-                            <p class="text-secondary">Дата создания: {{$object->created_at->format('d.m.y')}}</p>
+                            <p class="text-secondary my-0">Дата создания: {{$object->created_at->format('d.m.y')}}</p>
+                            <p class="text-secondary">Последнее изменение: {{$object->updated_at->format('d.m.y')}}</p>
                         </td>
                         <td>
                             {{$object->composits['persents']}} %
@@ -46,6 +47,12 @@
                             <a href="{{route('objects.showObjectSettings', [$object->id])}}">
                                 <img class="img-fluid" style="width:32px;" src="/images/pencil.svg"
                                      alt="Редактировать">
+                            </a>
+                        </td>
+                        <td class="text-center my-auto">
+                            <a href="{{route('objects.paperConsumption', $object->id)}}">
+                                <img class="img-fluid" style="width:32px;" src="/images/document-size.svg"
+                                     alt="Расход бумаги">
                             </a>
                         </td>
                         @if(!request()->is('objects/withStatus/4'))
