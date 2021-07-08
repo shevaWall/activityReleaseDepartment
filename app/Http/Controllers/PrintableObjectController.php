@@ -165,7 +165,13 @@ class PrintableObjectController extends Controller
             ->with('composits')
             ->get();
 
-        $a_formats = array();
+        /*
+         * $a_formats['formats'] - для вывода в сводную таблицу
+         * $a_formats['1 (2, 3)'] - для вывода по конкретному разделу (ПД/РД/ИИ соответственно)
+         */
+        $a_formats = array(
+            'formats' => [],
+        );
 
 //        todo: разделять на подсчет ПД/РД/ИИ отдельно и общий
         foreach ($obj[0]->composits as $composit) {
@@ -185,45 +191,35 @@ class PrintableObjectController extends Controller
                             break;
                     }
                     foreach ($countPdf->formats as $formatName => $format) {
-                        // если такого формата нет - добавляем и инициализируем первые значения
-                        if (!array_key_exists($formatName, $a_formats)) {
+                        if (isset($a_formats[$composit->compositGroup_id][$formatName])) {
+                            // есть ли у формата цвет/ЧБ и есть ли цвет/ЧБ в массиве?
                             if (isset($format->Colored)) {
-                                $a_formats[$formatName]['Colored'] = $format->Colored * $multypler;
-                                $a_formats[$formatName]['Colored_once'] = $format->Colored;
-
-                                (isset($a_formats[$formatName]['total']))
-                                    ? $a_formats[$formatName]['total'] += $format->Colored * $multypler
-                                    : $a_formats[$formatName]['total'] = $format->Colored * $multypler;
+                                if (isset($a_formats[$composit->compositGroup_id][$formatName]['Colored'])) {
+                                    $a_formats[$composit->compositGroup_id][$formatName]['Colored'] += $format->Colored * $multypler;
+                                    $a_formats[$composit->compositGroup_id][$formatName]['Colored_once'] += $format->Colored;
+                                } else {
+                                    $a_formats[$composit->compositGroup_id][$formatName]['Colored'] = $format->Colored * $multypler;
+                                    $a_formats[$composit->compositGroup_id][$formatName]['Colored_once'] = $format->Colored;
+                                }
                             }
                             if (isset($format->BW)) {
-                                $a_formats[$formatName]['BW'] = $format->BW * $multypler;
-                                $a_formats[$formatName]['BW_once'] = $format->BW;
-
-                                (isset($a_formats[$formatName]['total']))
-                                    ? $a_formats[$formatName]['total'] += $format->BW * $multypler
-                                    : $a_formats[$formatName]['total'] = $format->BW * $multypler;
+                                if (isset($a_formats[$composit->compositGroup_id][$formatName]['BW'])) {
+                                    $a_formats[$composit->compositGroup_id][$formatName]['BW'] += $format->BW * $multypler;
+                                    $a_formats[$composit->compositGroup_id][$formatName]['BW_once'] += $format->BW;
+                                } else {
+                                    $a_formats[$composit->compositGroup_id][$formatName]['BW'] = $format->BW * $multypler;
+                                    $a_formats[$composit->compositGroup_id][$formatName]['BW_once'] = $format->BW;
+                                }
                             }
                         } else {
-                            // если такой формат уже есть, то складываем циферЬки
+                            // есть ли у нового формата цвет/ЧБ?
                             if (isset($format->Colored)) {
-                                if (isset($a_formats[$formatName]['Colored'])) {
-                                    $a_formats[$formatName]['Colored'] += ($format->Colored * $multypler);
-                                    $a_formats[$formatName]['Colored_once'] += $format->Colored;
-                                } else {
-                                    $a_formats[$formatName]['Colored'] = $format->Colored * $multypler;
-                                    $a_formats[$formatName]['Colored_once'] = $format->Colored;
-                                }
-                                $a_formats[$formatName]['total'] += ($format->Colored * $multypler);
+                                $a_formats[$composit->compositGroup_id][$formatName]['Colored'] = $format->Colored * $multypler;
+                                $a_formats[$composit->compositGroup_id][$formatName]['Colored_once'] = $format->Colored;
                             }
                             if (isset($format->BW)) {
-                                if (isset($a_formats[$formatName]['BW'])) {
-                                    $a_formats[$formatName]['BW'] += ($format->BW * $multypler);
-                                    $a_formats[$formatName]['BW_once'] += $format->BW;
-                                } else {
-                                    $a_formats[$formatName]['BW'] = $format->BW * $multypler;
-                                    $a_formats[$formatName]['BW_once'] = $format->BW;
-                                }
-                                $a_formats[$formatName]['total'] += ($format->BW * $multypler);
+                                $a_formats[$composit->compositGroup_id][$formatName]['BW'] = $format->BW * $multypler;
+                                $a_formats[$composit->compositGroup_id][$formatName]['BW_once'] = $format->BW;
                             }
                         }
                     }
@@ -233,10 +229,57 @@ class PrintableObjectController extends Controller
 
         ksort($a_formats);
 
+        $a_formats = $this->makePivotFormats($a_formats);
+
         return view('objects.showPaperConsumption')
             ->with([
                 'object' => $obj[0],
                 'formats' => $a_formats,
             ]);
+    }
+
+    /**
+     * Собираем из ПД, РД, ИИ форматы и засовываем всё в одну общую для общих данных
+     * @param array $formats - массив со всеми форматами
+     * @return array
+     */
+    private function makePivotFormats(array $formats): array
+    {
+        foreach ($formats as $group_key => $group_val) {
+            if ($group_key != 'formats') {
+                foreach ($group_val as $format_key => $format_val) {
+                    if(isset($format_val['Colored'])){
+                        if (isset($formats['formats'][$format_key]['Colored'])) {
+                            $formats['formats'][$format_key]['Colored'] += $format_val['Colored'];
+                            $formats['formats'][$format_key]['Colored_once'] += $format_val['Colored_once'];
+                        } else {
+                            $formats['formats'][$format_key]['Colored'] = $format_val['Colored'];
+                            $formats['formats'][$format_key]['Colored_once'] = $format_val['Colored_once'];
+                        }
+                    }
+
+                    if(isset($format_val['BW'])){
+                        if (isset($formats['formats'][$format_key]['BW'])) {
+                            $formats['formats'][$format_key]['BW'] += $format_val['BW'];
+                            $formats['formats'][$format_key]['BW_once'] += $format_val['BW_once'];
+                        } else {
+                            $formats['formats'][$format_key]['BW'] = $format_val['BW'];
+                            $formats['formats'][$format_key]['BW_once'] = $format_val['BW_once'];
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach($formats['formats'] as $format_key => $format_val){
+            $c = $format_val['Colored'] ?? 0;
+            $c_once = $format_val['Colored_once'] ?? 0;
+            $bw = $format_val['BW'] ?? 0;
+            $bw_once = $format_val['BW_once'] ?? 0;
+
+            $formats['formats'][$format_key]['total'] = $c + $bw;
+            $formats['formats'][$format_key]['total_once'] = $c_once + $bw_once;
+        }
+        return $formats;
     }
 }

@@ -68,6 +68,9 @@ $(document).ready(function () {
             }
         }
     });
+
+    // вкладки для страницы "расход бумаги"
+    $('#paperConsumptionTabs, #paperConsumptionTabsSubPivotTable, #paperConsumptionTabsSubPD, #paperConsumptionTabsSubRD, #paperConsumptionTabsSubII').tabs();
 });
 
 
