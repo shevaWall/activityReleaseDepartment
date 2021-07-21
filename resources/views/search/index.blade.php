@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="col-12 text-center mt-5">
+    <div class="col-12 text-center mt-3">
         <h1 class="h1">Поиск</h1>
     </div>
 

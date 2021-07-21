@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-12 h2 text-center mt-5">Склад отдела выпуска</div>
+        <div class="col-12 h2 text-center mt-3">Склад отдела выпуска</div>
 
 
         <div class="col-6 py-5">

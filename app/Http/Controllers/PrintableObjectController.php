@@ -74,11 +74,11 @@ class PrintableObjectController extends Controller
      * @param int $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function showObjectSettings(int $id)
+    public function showObjectSettings(PrintableObject $PrintableObject)
     {
         return view('objects.showObjectSettings')
             ->with([
-                'object' => PrintableObject::findOrFail($id),
+                'object' => $PrintableObject,
                 'statuses' => Status::all(),
             ]);
     }
@@ -87,14 +87,15 @@ class PrintableObjectController extends Controller
      * отображения списка объектов по статусу (при значении 5 - отображаются все записи)
      * @param int $status_id
      */
-    public function withStatus(int $status_id)
+    public function withStatus(Status $Status)
     {
-        if ($status_id != 5) {
-            $objs = PrintableObject::where('status_id', $status_id)
+        if ($Status->id != 5) {
+            $objs = PrintableObject::where('status_id', $Status->id)
                 ->orderBy('created_at', 'desc')
                 ->get();
         } else {
-            $objs = PrintableObject::orderBy('created_at', 'desc')->get();
+            $objs = PrintableObject::orderBy('created_at', 'desc')
+                ->get();
         }
 
         $objs = $this->countPercent($objs);
@@ -104,8 +105,6 @@ class PrintableObjectController extends Controller
                 'objects' => $objs,
                 'statuses' => Status::all()
             ]);
-
-
     }
 
     /**
@@ -158,13 +157,8 @@ class PrintableObjectController extends Controller
     /**
      * выводит общий расход бумаги
      */
-    public function showPaperConsumption(int $object_id)
+    public function showPaperConsumption(PrintableObject $PrintableObject)
     {
-        $obj = PrintableObject::where('id', $object_id)
-            ->with('countPdf')
-            ->with('composits')
-            ->get();
-
         /*
          * $a_formats['formats'] - для вывода в сводную таблицу
          * $a_formats['1 (2, 3)'] - для вывода по конкретному разделу (ПД/РД/ИИ соответственно)
@@ -173,21 +167,20 @@ class PrintableObjectController extends Controller
             'formats' => [],
         );
 
-//        todo: разделять на подсчет ПД/РД/ИИ отдельно и общий
-        foreach ($obj[0]->composits as $composit) {
-            foreach ($obj[0]->countPdf as $countPdf) {
+        foreach ($PrintableObject->composits()->get() as $composit) {
+            foreach ($PrintableObject->countPdf()->get() as $countPdf) {
                 if ($composit->id == $countPdf->composit_id) {
                     $multypler = 1;
                     // устанавливаем множитель в зависимости от настроек объекта
                     switch ($composit->compositGroup_id) {
                         case 1:
-                            (!is_null($obj[0]->count_pd)) ? $multypler = $obj[0]->count_pd : $multypler = 1;
+                            (!is_null($PrintableObject->count_pd)) ? $multypler = $PrintableObject->count_pd : $multypler = 1;
                             break;
                         case 2:
-                            (!is_null($obj[0]->count_rd)) ? $multypler = $obj[0]->count_rd : $multypler = 1;
+                            (!is_null($PrintableObject->count_rd)) ? $multypler = $PrintableObject->count_rd : $multypler = 1;
                             break;
                         case 3:
-                            (!is_null($obj[0]->count_ii)) ? $multypler = $obj[0]->count_ii : $multypler = 1;
+                            (!is_null($PrintableObject->count_ii)) ? $multypler = $PrintableObject->count_ii : $multypler = 1;
                             break;
                     }
                     foreach ($countPdf->formats as $formatName => $format) {
@@ -233,7 +226,7 @@ class PrintableObjectController extends Controller
 
         return view('objects.showPaperConsumption')
             ->with([
-                'object' => $obj[0],
+                'object' => $PrintableObject,
                 'formats' => $a_formats,
             ]);
     }

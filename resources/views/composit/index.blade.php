@@ -2,13 +2,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-1 my-auto text-center">
-            <a href="{{route('objects.index')}}">
-                <img class="img-fluid" src="/images/backArrow.svg" alt="Назад" title="Назад">
-            </a>
-        </div>
-
-        <div class="col-11 my-auto">
+        <div class="col-11 my-auto mx-auto">
             <h1 class="text-center">
                 <a href="{{route('objects.showObjectSettings', $object->id)}}">{{$object->name}}</a>
             </h1>

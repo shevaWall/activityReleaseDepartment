@@ -1,12 +1,7 @@
 @extends('layout', ['title'=>"$object->name"])
 
 @section('content')
-    <div class="row my-5">
-        <div class="col-1 my-auto text-center">
-            <a href="{{route('objects.index')}}">
-                <img class="img-fluid" src="/images/backArrow.svg" alt="Назад" title="Назад">
-            </a>
-        </div>
+    <div class="row my-3">
         <div class="col-11 my-auto">
             <h1 class="text-center">Настройки заявки - <a href="{{route('objects.composit', $object->id)}}">перейти к составу</a> </h1>
         </div>
@@ -41,13 +36,6 @@
                     <input type="text" class="form-control" id="inputNomerZayavki" name="nomerZayavki" value="{{$object->nomerZayavki}}">
                 </div>
             </div>
-
-            {{--<div class="row mb-3">
-                <label for="inputFile" class="col-sm-2 col-form-label">Скан заявки</label>
-                <div class="col-sm-10">
-                    <input class="form-control" type="file" id="inputFile" name="scan_img" value="{{$object->scan_img}}">
-                </div>
-            </div>--}}
 
             <div class="row mb-3">
                 <label for="inputObjectOwner" class="col-sm-2 col-form-label">Чей объект</label>

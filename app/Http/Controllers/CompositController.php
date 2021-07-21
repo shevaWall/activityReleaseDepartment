@@ -16,16 +16,15 @@ class CompositController extends Controller
      * @param int $object_id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index(int $object_id){
-        $object         = PrintableObject::findOrFail($object_id);
+    public function index(PrintableObject $PrintableObject){
         $compositGroups = CompositGroup::all();
-        $composits      = Composit::where('object_id', $object_id)->with('printableObject')->with('formats')->get();
+        $composits      = Composit::where('object_id', $PrintableObject->id)->with('printableObject')->with('formats')->get();
         $persents       = $this->persent($composits, $compositGroups);
 
         return view('composit.index')
             ->with(
                 [
-                    'object'            => $object,
+                    'object'            => $PrintableObject,
                     'compositGroups'    => $compositGroups,
                     'composits'         => $composits,
                     'persents'          => $persents,
