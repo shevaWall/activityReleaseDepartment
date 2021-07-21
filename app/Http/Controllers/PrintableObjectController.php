@@ -155,17 +155,14 @@ class PrintableObjectController extends Controller
     }
 
     /**
-     * выводит общий расход бумаги
+     * выводит расход бумаги
      */
     public function showPaperConsumption(PrintableObject $PrintableObject)
     {
         /*
-         * $a_formats['formats'] - для вывода в сводную таблицу
          * $a_formats['1 (2, 3)'] - для вывода по конкретному разделу (ПД/РД/ИИ соответственно)
          */
-        $a_formats = array(
-            'formats' => [],
-        );
+        $a_formats = array();
 
         foreach ($PrintableObject->composits()->get() as $composit) {
             foreach ($PrintableObject->countPdf()->get() as $countPdf) {
@@ -220,7 +217,9 @@ class PrintableObjectController extends Controller
             }
         }
 
-        ksort($a_formats);
+        foreach($a_formats as $k => $v){
+            ksort($a_formats[$k]);
+        }
 
         $a_formats = $this->makePivotFormats($a_formats);
 
