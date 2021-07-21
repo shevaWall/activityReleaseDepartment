@@ -70,11 +70,11 @@ Route::group([
         ->name('deleteObject');
 
     // навсегда удаляет объект из БД
-    Route::get("{id}-{status_id}/remove", [PrintableObjectController::class, "removeObject"])
+    Route::get("{PrintableObject}-{Status}/remove", [PrintableObjectController::class, "removeObject"])
         ->name('removeObject');
 
     // аякс изменение статуса заявки
-    Route::get("changeObjectStatus/{object_id}/{status_id}", [PrintableObjectController::class, "ajaxChangeObjectStatus"])
+    Route::get("changeObjectStatus/{PrintableObject}/{Status}", [PrintableObjectController::class, "ajaxChangeObjectStatus"])
         ->name('ajaxChangeObjectStatus');
 
     // отображение состава раздела
@@ -129,14 +129,14 @@ Route::group([
         ->name('ajaxAddComposit');
 
     // аякс удаление раздела (состава)
-    Route::get("ajaxDeleteComposit/{composit_id}", [CompositController::class, "ajaxDeleteComposit"])
+    Route::get("ajaxDeleteComposit/{Composit}", [CompositController::class, "ajaxDeleteComposit"])
         ->name('ajaxDeleteComposit');
 
     // аякс изменение статуса (готов/не готов) раздела (соства)
-    Route::get("ajaxChangeCompositStatus/{composit_id}", [CompositController::class, "ajaxChangeCompositStatus"])
+    Route::get("ajaxChangeCompositStatus/{Composit}", [CompositController::class, "ajaxChangeCompositStatus"])
         ->name('ajaxChangeCompositStatus');
 
-    Route::post('ajaxRenameComposit/{composit_id}', [CompositController::class, "ajaxRenameComposit"]);
+    Route::post('ajaxRenameComposit/{Composit}', [CompositController::class, "ajaxRenameComposit"]);
 });
 
 /**
@@ -156,11 +156,11 @@ Route::group([
         ->name('ajaxGetCountedPdf');
 
     // очищает все подсчитанные форматы в объекте
-    Route::get("clearAll/{object_id}", [CountPdfController::class, "clearAll"])
+    Route::get("clearAll/{ajaxDropCounted}", [CountPdfController::class, "clearAll"])
         ->name('clearAll');
 
     // очищает список подсчитанных форматов у определенного раздела (состава)
-    Route::get("ajaxDropCounted/{composit_id}", [CountPdfController::class, "ajaxDropCounted"]);
+    Route::get("ajaxDropCounted/{Composit}", [CountPdfController::class, "ajaxDropCounted"]);
 
     // вывод заглушки о неправильном расширении файла
     Route::get("ajaxBadExtension", [CountPdfController::class, "ajaxBadExtension"]);
@@ -185,7 +185,7 @@ Route::group([
         ->name('updateWarehouseActualData');
 
     Route::get("ajaxAddNewTr", [WarehouseController::class, "ajaxAddNewTr"]);
-    Route::get("ajaxDeleteItem/{warehouse_id}", [WarehouseController::class, "ajaxDeleteItem"]);
+    Route::get("ajaxDeleteItem/{Warehouse}", [WarehouseController::class, "ajaxDeleteItem"]);
 
-    Route::get("ajaxMoreTransaction/{lastTransactionId}", [WarehouseTransactionsController::class, "ajaxMoreTransaction"]);
+    Route::get("ajaxMoreTransaction/{WarehouseTransactions}", [WarehouseTransactionsController::class, "ajaxMoreTransaction"]);
 });

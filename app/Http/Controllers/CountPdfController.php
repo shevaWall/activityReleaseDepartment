@@ -108,15 +108,6 @@ class CountPdfController extends Controller
 
 
     /**
-     * выплёвывает массив всех размеров страниц в ПДФ в pts (unused)
-     * @return array
-     */
-    public function getSizes(): array
-    {
-        return $this->sizes;
-    }
-
-    /**
      * через shell выполняем запросы pdfinfo и ghostscript
      * @return bool
      */
@@ -257,6 +248,7 @@ class CountPdfController extends Controller
      * загружаем файл к себе, для его обработки. После обработки удаляём
      * @param Request $request
      * @param int $composit_id
+     * @return \Illuminate\Http\Response
      */
     public function ajaxLoadFile(Request $request, int $composit_id)
     {
@@ -293,16 +285,15 @@ class CountPdfController extends Controller
 
     /**
      * очищает весь список подсчитанных форматов во всём объекте
-     * @param int $object_id
+     * @param PrintableObject $PrintableObject
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function clearAll(int $object_id): \Illuminate\Http\RedirectResponse
+    public function clearAll(PrintableObject $PrintableObject): \Illuminate\Http\RedirectResponse
     {
-        $object = PrintableObject::where('id', $object_id)
-            ->with('countPdf')
+        $PrintableObject->with('countPdf')
             ->get();
 
-        foreach($object[0]->countPdf as $k => $v){
+        foreach($PrintableObject->countPdf as $k => $v){
             CountPdf::destroy($v->id);
         }
 
@@ -311,10 +302,10 @@ class CountPdfController extends Controller
 
     /**
      * очищает список подсчитанных форматов у определенного раздела (состава)
-     * @param int $composit_id
+     * @param Composit $Composit
      */
-    public function ajaxDropCounted(int $composit_id){
-        CountPdf::where('composit_id', $composit_id)->delete();
+    public function ajaxDropCounted(Composit $Composit){
+        CountPdf::where('composit_id', $Composit->id)->delete();
     }
 
     /**

@@ -71,7 +71,7 @@ class PrintableObjectController extends Controller
 
     /**
      * отображение настроек объекта
-     * @param int $id
+     * @param PrintableObject $PrintableObject
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function showObjectSettings(PrintableObject $PrintableObject)
@@ -85,7 +85,8 @@ class PrintableObjectController extends Controller
 
     /**
      * отображения списка объектов по статусу (при значении 5 - отображаются все записи)
-     * @param int $status_id
+     * @param Status $Status
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function withStatus(Status $Status)
     {
@@ -109,17 +110,17 @@ class PrintableObjectController extends Controller
 
     /**
      * навсегда удаляет объект из БД
-     * @param int $id
+     * @param PrintableObject $PrintableObject
+     * @param Status $Status
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function removeObject(int $id, int $status_id)
+    public function removeObject(PrintableObject $PrintableObject, Status $Status)
     {
-        $obj = PrintableObject::findOrFail($id);
-        $obj->countPdf()->delete();
-        $obj->composits()->delete();
-        $obj->delete();
+        $PrintableObject->countPdf()->delete();
+        $PrintableObject->composits()->delete();
+        $PrintableObject->delete();
 
-        return redirect()->route('objects.withStatus', $status_id);
+        return redirect()->route('objects.withStatus', $Status->id);
     }
 
     /**
@@ -143,12 +144,13 @@ class PrintableObjectController extends Controller
 
     /**
      * ajax изменение статуса объекта
-     * @param int $object_id - id объекта
+     * @param PrintableObject $PrintableObject
      * @param int $status_id - id статуса, на кт меняется
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function ajaxChangeObjectStatus(int $object_id, int $status_id)
+    public function ajaxChangeObjectStatus(PrintableObject $PrintableObject, int $status_id)
     {
-        PrintableObject::where('id', $object_id)->update([
+        $PrintableObject->update([
             'status_id' => $status_id
         ]);
         return redirect()->back();

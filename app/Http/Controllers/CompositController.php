@@ -12,31 +12,32 @@ use PHPUnit\Framework\Constraint\Count;
 class CompositController extends Controller
 {
     /**
-     * отображение состава объекта
-     * @param int $object_id
+     * отображение состава (разделов) объекта
+     * @param PrintableObject $PrintableObject - Route Model Binding
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index(PrintableObject $PrintableObject){
+    public function index(PrintableObject $PrintableObject)
+    {
         $compositGroups = CompositGroup::all();
-        $composits      = Composit::where('object_id', $PrintableObject->id)->with('printableObject')->with('formats')->get();
-        $persents       = $this->persent($composits, $compositGroups);
+        $composits = Composit::where('object_id', $PrintableObject->id)->with('printableObject')->with('formats')->get();
+        $persents = $this->persent($composits, $compositGroups);
 
         return view('composit.index')
-            ->with(
-                [
-                    'object'            => $PrintableObject,
-                    'compositGroups'    => $compositGroups,
-                    'composits'         => $composits,
-                    'persents'          => $persents,
-                ]
-            );
+            ->with([
+                'object' => $PrintableObject,
+                'compositGroups' => $compositGroups,
+                'composits' => $composits,
+                'persents' => $persents,
+            ]);
     }
 
     /**
-     * ajax добавление раздела
+     * ajax добавление состава (раздела)
      * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function ajaxAddComposit(Request $request){
+    public function ajaxAddComposit(Request $request)
+    {
         $req = $request->all();
         $req['completed'] = 0;
         $addedComposit = Composit::create($req);
@@ -45,24 +46,24 @@ class CompositController extends Controller
     }
 
     /**
-     * ajax удаление раздела
-     * @param int $composit_id
+     * ajax удаление состава (раздела)
+     * @param Composit $Composit - Route Model Binding
      */
-    public function ajaxDeleteComposit(int $composit_id){
-        CountPdf::where('composit_id', $composit_id)->delete();
-        Composit::findOrFail($composit_id)->delete();
+    public function ajaxDeleteComposit(Composit $Composit)
+    {
+        CountPdf::where('composit_id', $Composit->id)->delete();
+        $Composit->delete();
     }
 
     /**
      * ajax изменение статуса раздела
-     * @param int $composit_id
+     * @param Composit $Composit - Route Model Binding
      */
-    public function ajaxChangeCompositStatus(int $composit_id){
-        $composit = Composit::findOrFail($composit_id);
-
-        ($composit->completed == 'Не готов') ? $composit->completed = 1 : $composit->completed = 0;
-        $composit->save();
-        echo $composit->completed;
+    public function ajaxChangeCompositStatus(Composit $Composit)
+    {
+        ($Composit->completed == 'Не готов') ? $Composit->completed = 1 : $Composit->completed = 0;
+        $Composit->save();
+        echo $Composit->completed;
     }
 
     /**
@@ -71,27 +72,26 @@ class CompositController extends Controller
      * @param object $compositGroups - объект с группами разделов
      * @return array
      */
-    private final function persent(object $composits, object $compositGroups) {
+    private final function persent(object $composits, object $compositGroups)
+    {
         $groupPersents = [];
 
-        foreach($compositGroups as $compositGroup){
-            $countAll       = 0;
+        foreach ($compositGroups as $compositGroup) {
+            $countAll = 0;
             $countCompleted = 0;
-            foreach($composits as $composit){
-                if($composit->compositGroup_id == $compositGroup->id){
+            foreach ($composits as $composit) {
+                if ($composit->compositGroup_id == $compositGroup->id) {
                     $countAll++;
-                    if($composit->completed == 'Готов'){
+                    if ($composit->completed == 'Готов')
                         $countCompleted++;
-                    }
                 }
             }
 
-            if(!($countAll == 0 || $countCompleted == 0)){
-                $pers = $countCompleted/$countAll;
-                $groupPersents[$compositGroup->id] = round($pers*100);
-            }else{
+            if (!($countAll == 0 || $countCompleted == 0)) {
+                $pers = $countCompleted / $countAll;
+                $groupPersents[$compositGroup->id] = round($pers * 100);
+            } else
                 $groupPersents[$compositGroup->id] = 0;
-            }
         }
 
         return $groupPersents;
@@ -99,10 +99,12 @@ class CompositController extends Controller
 
     /**
      * делает аякс запрос на переименовывание названия состава(раздела)
-     * @param int $composit_id - id состава(раздела)
+     * @param Request $r
+     * @param Composit $Composit - Route Model Binding
      */
-    public function ajaxRenameComposit(Request $r, int $composit_id){
-        Composit::findOrFail($composit_id)->update($r->all());
+    public function ajaxRenameComposit(Request $r, Composit $Composit)
+    {
+        $Composit->update($r->all());
     }
 
 }

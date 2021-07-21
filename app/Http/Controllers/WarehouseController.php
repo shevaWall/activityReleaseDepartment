@@ -14,8 +14,7 @@ class WarehouseController extends Controller
         return view('warehouse.index')
             ->with('warehouse_items', Warehouse::all())
             ->with('transactions', $transactions)
-            ->with('transactions_count', $transactions->count())
-            ;
+            ->with('transactions_count', $transactions->count());
     }
 
 //    todo: сделать свой request, если какое-то поле не проходит по требованиям
@@ -68,19 +67,17 @@ class WarehouseController extends Controller
         return view('warehouse.newTr');
     }
 
-    public function ajaxDeleteItem(int $warehouseItem_id){
-        $deleteWarehouseItem = Warehouse::findOrFail($warehouseItem_id);
-
+    public function ajaxDeleteItem(Warehouse $Warehouse){
         $transactionInfo = [
             0 => [
-                'name'  => $deleteWarehouseItem->material,
-                'before'=> $deleteWarehouseItem->quantity,
+                'name'  => $Warehouse->material,
+                'before'=> $Warehouse->quantity,
                 'after' => 0,
             ]
         ];
 
         $transaction = WarehouseTransactionsController::makeTransaction(0, 'Удаление материала со склада', $transactionInfo);
-        $deleteWarehouseItem->delete();
+        $Warehouse->delete();
 
         return view('warehouseTransaction.newTr')
             ->with('transaction', $transaction);

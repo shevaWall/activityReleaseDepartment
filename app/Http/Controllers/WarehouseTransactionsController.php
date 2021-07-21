@@ -14,15 +14,15 @@ class WarehouseTransactionsController extends Controller
      * @param $transactionInfo - обычно это массив информации, содержащий в себе информацию о названии материала (name),
      * количество до транзакции (before) и количество после транзакции (after). Например
      * $transactionInfo = [
-        0 => [
-        'name'  => $warehouseItem->material,
-        'before'=> $quantityBefore,
-        'after' => $request->quantity,
-        ]
-        ];
-     * @param int|null $printableObject_id - необязательное, id связанного объекта(заявки) печати
+     * 0 => [
+     * 'name'  => $warehouseItem->material,
+     * 'before'=> $quantityBefore,
+     * 'after' => $request->quantity,
+     * ]
+     * ];
+     * @return mixed
      */
-    static function makeTransaction(bool $type, string $description, $transactionInfo, int $printableObject_id = null){
+    static function makeTransaction(bool $type, string $description, $transactionInfo){
         return WarehouseTransactions::create([
             'type_of_operation' => $type,
             'description'       => $description,
@@ -30,10 +30,13 @@ class WarehouseTransactionsController extends Controller
         ]);
     }
 
-
-    // аякс подгрузка транзакций при прокрутке страницы
-    public function ajaxMoreTransaction(int $lastTransactionId){
-        $transactions = WarehouseTransactions::where('id','<', $lastTransactionId)->orderBy('id', 'desc')->take(3)->get();
+    /**
+     * аякс подгрузка транзакций при прокрутке страницы
+     * @param WarehouseTransactions $WarehouseTransactions
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function ajaxMoreTransaction(WarehouseTransactions $WarehouseTransactions){
+        $transactions = WarehouseTransactions::where('id','<', $WarehouseTransactions->id)->orderBy('id', 'desc')->take(3)->get();
 
         return view('warehouseTransaction.ajaxMoreTransactions')
             ->with('transactions', $transactions)
