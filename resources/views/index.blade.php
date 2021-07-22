@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-6 latestAddedObjects py-5 ">
+        <div class="col-6 latestAddedObjects py-5">
             <div class="row card text-dark">
                 <div class="card-body">
                     <h5 class="card-title text-center">Последние добавленные заявки</h5>
@@ -25,6 +25,29 @@
                             <div class="btn btn-link"><a href="{{route('objects.submit_form')}}">добавить</a></div>
                         </div>
                     @endif
+                </div>
+            </div>
+        </div>
+        <div class="col-6 notes py-5">
+            <div class="row card text-dark">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Заметки</h5>
+                    @if(isset($notes) && count($notes) > 0)
+                        <div class="note-list">
+                            @foreach($notes as $note)
+                                @include('blocknotes.newBlock', $note)
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center">Пока здесь нет записей</div>
+                    @endif
+                    <form action="/" method="post" id="notesForm" class="mt-3">
+                        @csrf
+                        <div class="col-12 text-center">
+                            <textarea class="form-control" id="newNote" type="text" name="name"
+                                      placeholder="Ввести текст заметки"></textarea>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

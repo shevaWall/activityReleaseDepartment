@@ -1,4 +1,4 @@
-body{
+body {
     background-color: #ebebeb;
 }
 
@@ -6,34 +6,35 @@ tbody[id^="compositGroup_"] img {
     width: 25px;
 }
 
-.pointer{
+.pointer {
     cursor: pointer;
 }
 
-p.pointer:hover{
-    text-decoration:underline;
+p.pointer:hover {
+    text-decoration: underline;
 }
 
-p.uncompleted{
-    color:red;
+p.uncompleted {
+    color: red;
 }
-p.completed{
+
+p.completed {
     color: green;
 }
 
-.fontsize10{
+.fontsize10 {
     font-size: 10px;
 }
 
-.numeratedTable{
-    counter-reset: compositCounter ;
+.numeratedTable {
+    counter-reset: compositCounter;
 }
 
-.numeratedTable > tbody > tr{
+.numeratedTable > tbody > tr {
     counter-increment: compositCounter;
 }
 
-.numeratedTable tbody > tr:not(:last-child) th:before{
+.numeratedTable tbody > tr:not(:last-child) th:before {
     content: counter(compositCounter);
 }
 
@@ -44,19 +45,20 @@ div[id^='dropZone_'] {
     width: 100%;
     cursor: pointer;
 }
+
 div[id^='dropZone_'].highlight {
     border-color: purple;
 }
 
-.cursorRenameComposit{
+.cursorRenameComposit {
     cursor: context-menu;
 }
 
-.renameComposit{
+.renameComposit {
     position: relative;
 }
 
-.completeRenaming{
+.completeRenaming {
     cursor: pointer;
     display: inline-block;
     position: absolute;
@@ -66,34 +68,34 @@ div[id^='dropZone_'].highlight {
     background: url('/images/checkMark.svg') no-repeat 50% 50%;
 }
 
-.latestAddedObjects a{
-    text-decoration:none;
+.latestAddedObjects a {
+    text-decoration: none;
 }
 
-nav.mainNavBar .fixBorderRadius{
+nav.mainNavBar .fixBorderRadius {
     border-radius: .25rem 0 0 .25rem;
 }
 
-.fixMinWidth{
+.fixMinWidth {
     min-width: 150px;
 }
 
 /*чиним максимальную ширину при autocomplete в поиске*/
-.ui-widget-content.ui-autocomplete{
+.ui-widget-content.ui-autocomplete {
     max-width: 210px;
 }
 
-.editPencil{
+.editPencil {
     position: relative;
     left: 10px;
     cursor: pointer;
 }
 
-.warehouseActual td{
+.warehouseActual td {
     width: 245px;
 }
 
-.addCircleBtn{
+.addCircleBtn {
     border: 1px solid black;
     border-radius: 30px;
     width: 30px;
@@ -104,10 +106,36 @@ nav.mainNavBar .fixBorderRadius{
     line-height: 27px;
     cursor: pointer;
 }
-.addCircleBtn:hover{
+
+.addCircleBtn:hover {
     box-shadow: 0px 1px 5px 0px #00000080;
 }
 
-.transactionsTable td{
+.transactionsTable td {
     vertical-align: middle;
+}
+
+.bg-note {
+    background-color: #e7e883;
+    border-radius: 5px;
+    position: relative;
+}
+
+.bg-note:hover .deleteNote{
+    display:block;
+}
+
+.bg-note .deleteNote{
+    width: 17px;
+    height: 17px;
+    position: absolute;
+    right: 15px;
+    top: 5px;
+    cursor: pointer;
+    color: white;
+    background-color: red;
+    line-height: 1.2;
+    text-align: center;
+    border-radius: 15px;
+    display:none;
 }

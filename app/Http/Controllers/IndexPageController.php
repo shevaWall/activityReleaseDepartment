@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blocknotes;
 use App\Models\PrintableObject;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,10 @@ class IndexPageController extends Controller
             ->take(5)
             ->get();
 
+        $notes = Blocknotes::all();
+
         return view('index')
-            ->with('latestObjects', $latestObjects);
+            ->with('latestObjects', $latestObjects)
+            ->with('notes', $notes);
     }
 }

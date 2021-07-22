@@ -46,7 +46,7 @@ $(document).ready(function () {
     // ajax подзагрузка списка транзацкий при прокрутке
     $(document).on('scroll', function () {
         let ajaxMoreTransactions = $('.ajaxMoreTransactions');
-        if($(ajaxMoreTransactions).length !== 0){
+        if ($(ajaxMoreTransactions).length !== 0) {
 
             let ajaxMoreTransactionsOffset = $(ajaxMoreTransactions).offset().top;
             let documentScroll = $(document).scrollTop() + $(window).height();
@@ -57,7 +57,7 @@ $(document).ready(function () {
                 $.ajax({
                     type: 'get',
                     url: '/warehouse/ajaxMoreTransaction/' + lastTransactionId,
-                    beforeSend: function(){
+                    beforeSend: function () {
                         $(ajaxMoreTransactions).addClass('ajaxOngoing');
                     },
                     success: function (msg) {
@@ -71,6 +71,31 @@ $(document).ready(function () {
 
     // вкладки для страницы "расход бумаги"
     $('#paperConsumptionTabs, #paperConsumptionTabsSubPivotTable, #paperConsumptionTabsSubPD, #paperConsumptionTabsSubRD, #paperConsumptionTabsSubII').tabs();
+
+    // ajax добавление записи в блокнот на главной странице
+    $('#newNote').on('keydown', function (e) {
+        // если нажатие на Enter, но без зажатого shift, то отпраляем запрос. Если с зажатым - игнориемум, чтобы был
+        // перенос строки
+        if (e.key == 'Enter' && !e.shiftKey) {
+            let form_data = new FormData();
+            form_data.append('_token', $('#notesForm').find("input[name='_token']").val());
+            form_data.append('name', $("#notesForm").find('textarea').val());
+
+            $.ajax({
+                url: '/blocknotes/addNote',
+                dataType: 'text',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,
+                type: 'post',
+                success: function(newNote){
+                    $('#notesForm').find('textarea').val('');
+                    $('.note-list').append(newNote);
+                }
+            });
+        }
+    });
 });
 
 
@@ -124,7 +149,7 @@ function ajaxChangeObjectStatus(element) {
         url: url,
 
         success: function (msg) {
-            console.log(msg);
+            // console.log(msg);
         }
     });
 }
@@ -234,7 +259,7 @@ function ajaxCountFormats(element, file) {
                 });
             },
             error: function (msg) {
-                console.log(msg.status);
+                // console.log(msg.status);
                 $('#response').html(msg.responseText);
                 let badPdf_modal = new bootstrap.Modal(document.getElementById('badPdf_modal'));
 
@@ -267,7 +292,7 @@ function ajaxCountFormats(element, file) {
             url: '/countPdf/ajaxBadExtension',
 
             success: function (msg) {
-                console.log(msg);
+                // console.log(msg);
                 $('#response').html(msg);
                 let badPdfExtension = new bootstrap.Modal(document.getElementById('badPdfExtension'));
                 badPdfExtension.toggle();
@@ -325,7 +350,7 @@ function completeRenameComposit(element) {
         data: form_data,
 
         success: function (msg) {
-            console.log(msg);
+            // console.log(msg);
         }
     });
 }
@@ -484,4 +509,23 @@ function showTotalPaperConsumption(element) {
             break;
     }
     $('.tablePaperConsumption').find('.toggleTotal').toggleClass('d-none');
+}
+
+// ajax удаление заметки на главной странице
+function ajaxDeleteNote(note_id, token){
+    let form_data = new FormData();
+    form_data.append('id', note_id);
+    form_data.append('_token', token);
+    $.ajax({
+        url: '/blocknotes/deleteNote',
+        dataType: 'text',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(){
+            $('.notes').find(".row[data-note-id="+note_id+"]").remove();
+        }
+    });
 }
