@@ -16,6 +16,13 @@
             <a class="btn btn-success" href="{{route('objects.paperConsumption', $object->id)}}">Вывести общий расход бумаги</a>
         </div>
 
+        <div class="col-12 my-5">
+            <div class="h2 text-center">ПД - 0%</div>
+            <div class="fieldForDropWrapper py-5">
+                <div class="fieldForDropText text-center">Перетащите файлы сюда</div>
+            </div>
+        </div>
+
         @foreach($compositGroups as $compositGroup)
             <div class="col-12">
                 <div class="h2 text-center">{{$compositGroup->name}} - <span id="compositGroupPersents_{{$compositGroup->id}}">{{$persents["$compositGroup->id"]}}</span>%</div>
