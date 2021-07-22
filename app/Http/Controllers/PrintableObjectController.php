@@ -164,7 +164,9 @@ class PrintableObjectController extends Controller
         /*
          * $a_formats['1 (2, 3)'] - для вывода по конкретному разделу (ПД/РД/ИИ соответственно)
          */
-        $a_formats = array();
+        $a_formats = array(
+            'formats' => [],
+        );
 
         foreach ($PrintableObject->composits()->get() as $composit) {
             foreach ($PrintableObject->countPdf()->get() as $countPdf) {
@@ -264,6 +266,8 @@ class PrintableObjectController extends Controller
                 }
             }
         }
+
+//        dd($formats);
 
         foreach($formats['formats'] as $format_key => $format_val){
             $c = $format_val['Colored'] ?? 0;
