@@ -145,7 +145,7 @@ Route::group([
  */
 Route::group([
 //    'middleware'=>  '',
-    'prefix' => 'countPdf',
+'prefix' => 'countPdf',
     'as' => 'countPdf.',
 ], function () {
     // аякс загрузка файла и инициализация рассчетов форматов

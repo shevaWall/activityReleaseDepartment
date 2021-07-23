@@ -89,7 +89,7 @@ $(document).ready(function () {
                 processData: false,
                 data: form_data,
                 type: 'post',
-                success: function(newNote){
+                success: function (newNote) {
                     $('#notesForm').find('textarea').val('');
                     $('.note-list').append(newNote);
                 }
@@ -114,26 +114,20 @@ function dndDrop(element) {
     }
 }
 
-function dndDragenter(element) {
-    $(element).addClass('highlight');
-    $(element).text('Отпустите, чтобы загрузить файл.');
+function dndDropMany(element, token) {
+    stopPreventDef();
+
+    let files = window.event.dataTransfer.files;
+
+    if (files.length > 0) {
+        ajaxCountFormats(element, files, token);
+    }
 }
 
-function dndDragleave(element) {
-    $(element).removeClass('highlight');
-    $(element).text('Для загрузки, перетащите файл сюда или нажмите здесь.');
-}
-
+// отменяет все действия по умолчанию для браузера при перемещении файлов в браузер
 function stopPreventDef() {
     window.event.stopPropagation();
     window.event.preventDefault();
-}
-
-// для загрузки DnD файлов. Вызов проводника при клике на область
-function openFileExplorer(element) {
-    let compositId = parseInt($(element).parents('tr').attr('id').replace(/\D+/g, ""));
-    let input = $('#countPdf_' + compositId);
-    $(input).click();
 }
 
 // ajax изменение состояния объекта
@@ -203,21 +197,108 @@ function recountPersents(compositGroup) {
 }
 
 // аякс подсчет страниц pdf
-function ajaxCountFormats(element, file) {
-    let fileName = file.name;
-    let fileNameParts = fileName.split('.');
-    let fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
+function ajaxCountFormats(element, files, token) {
+    let pause = false;
+    $.each(files, function (key, file) {
+        let fileName = file.name;
+        let fileNameParts = fileName.split('.');
+        let fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
+        let newFileName = '';
+        let objectId = $(element).data('object-id');
+        let compositGroup_id = $(element).data('composit-group-id');
 
-    let form_data = new FormData();
-    let composit_id = parseInt($(element).parents('tr').attr('id').replace(/\D+/g, ""));
+        if (fileExtension === 'pdf') {
+            // объединяем части от имени файла в одну переменную, но без расширения файла
+            for (let i = 0; i < fileNameParts.length - 1; i++) {
+                newFileName += fileNameParts[i];
+            }
 
-    let error_pdf = $(element).parents('tr').find('.error_pdf');
+            // подготавливаем данные для создания состава (раздела)
+            let compositFormData = new FormData();
+            compositFormData.append('name', newFileName);
+            compositFormData.append('object_id', objectId);
+            compositFormData.append('compositGroup_id', compositGroup_id);
+            compositFormData.append('_token', token);
 
-    // добавляем в FormData файл pdf и токен
-    form_data.append('pdf', file);
-    form_data.append('_token', $(element).parents('form').find("input[name='_token']").val());
+            $.ajax({
+                url: '/composit/ajaxAddComposit',
+                data: compositFormData,
+                dataType: 'text',
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: 'post',
+                success: function (newComposit) {
+                    $('tbody#compositGroup_' + compositGroup_id).append(newComposit);
+                    let composit_id = $('tbody#compositGroup_' + compositGroup_id).children('tr:last').data('composit-id');
+                    // подготавливаем данные для подсчета pdf
+                    let pdfFormData = new FormData();
+                    pdfFormData.append('_token', token);
+                    pdfFormData.append('pdf', file);
+                    pdfFormData.append('composit_id', composit_id);
 
-    if (fileExtension === 'pdf') {
+                    $.ajax({
+                        url: '/countPdf/ajaxCountPdf/' + composit_id,
+                        dataType: 'text',
+                        cache: false,
+                        mimeType: "multipart/form-data",
+                        contentType: false,
+                        processData: false,
+                        data: pdfFormData,
+                        type: 'post',
+                        beforeSend: function () {
+                            // отображаем спиннер
+                            $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
+                            // удаляем таблицу с форматами, для отображения новой таблицы из ajax ответа
+                            $('#compositId_' + composit_id).find('.newTableHere').find('table').remove();
+                        },
+                        success: function (msg) {
+                            // получаем новые обработанные данные страниц
+                            $.ajax({
+                                type: 'get',
+                                url: '/countPdf/ajaxGetCountedPdf/' + composit_id,
+                                success: function (msg) {
+                                    // отображаем новые обработанные форматы страниц
+                                    $('#compositId_' + composit_id).find('.newTableHere').append(msg);
+                                    // скрываем спиннер
+                                    $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
+                                }
+                            });
+                        },
+                        error: function (msg) {
+                            // console.log(msg.status);
+                            $('#response').html(msg.responseText);
+                            let badPdf_modal = new bootstrap.Modal(document.getElementById('badPdf_modal'));
+
+                            // выключаем спиннер
+                            $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
+
+                            if ($(error_pdf).hasClass('d-none')) {
+                                $(error_pdf).toggleClass('d-none');
+                                if (msg.status === 504) {
+                                    $(element).text('Для этого файла нужно больше времени на обработку. ' +
+                                        'Процесс всё ещё идёт в фоновом режиме. Попробуйте перезагрузить страницу позже.');
+                                } else {
+                                    $(element).text('Произошла ошибка');
+
+                                    // отображаем всплывашку ошибки
+                                    badPdf_modal.toggle();
+
+                                    badPdf_modal._element.addEventListener('hide.bs.modal', function (event) {
+                                        $('#response').html('');
+                                    });
+                                }
+                            }
+                        }
+                    });
+
+
+                }
+            })
+        }
+    });
+
+    /*if (fileExtension === 'pdf') {
         $.ajax({
             url: '/countPdf/ajaxCountPdf/' + composit_id,
             dataType: 'text',
@@ -301,7 +382,7 @@ function ajaxCountFormats(element, file) {
                 });
             }
         });
-    }
+    }*/
 }
 
 // ajax сбрасываем посчитанные страницы PDF у определенного раздела (состава)
@@ -512,7 +593,7 @@ function showTotalPaperConsumption(element) {
 }
 
 // ajax удаление заметки на главной странице
-function ajaxDeleteNote(note_id, token){
+function ajaxDeleteNote(note_id, token) {
     let form_data = new FormData();
     form_data.append('id', note_id);
     form_data.append('_token', token);
@@ -524,8 +605,8 @@ function ajaxDeleteNote(note_id, token){
         processData: false,
         data: form_data,
         type: 'post',
-        success: function(){
-            $('.notes').find(".row[data-note-id="+note_id+"]").remove();
+        success: function () {
+            $('.notes').find(".row[data-note-id=" + note_id + "]").remove();
         }
     });
 }
