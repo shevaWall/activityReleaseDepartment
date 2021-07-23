@@ -13,8 +13,7 @@
         </div>
 
         <div class="col-auto mx-auto">
-            <a class="btn btn-success" href="{{route('objects.paperConsumption', $object->id)}}">Вывести общий расход
-                бумаги</a>
+            <a class="btn btn-success" href="{{route('objects.paperConsumption', $object->id)}}">Вывести общий расход бумаги</a>
         </div>
 
         @foreach($compositGroups as $compositGroup)
@@ -28,7 +27,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Название раздела</th>
                         <th scope="col">Статус</th>
-                        <th scope="col" colspan="3">Форматы</th>
+                        <th scope="col" colspan="2">Форматы</th>
                     </tr>
                     </thead>
                     <tbody id="compositGroup_{{$compositGroup->id}}">
@@ -44,8 +43,11 @@
                      data-object-id="{{$object->id}}"
                      data-composit-group-id="{{$compositGroup->id}}"
                      ondrop="dndDropMany(this, '{{csrf_token()}}')"
-                     ondragover="stopPreventDef()">
+                     ondragover="stopPreventDef()"
+                     ondragenter="dndDragenter(this)"
+                     ondragleave="dndDragleave(this)">
                     <div class="fieldForDropText text-center">Перетащите файлы сюда</div>
+                    <div class="fieldForDropCount text-center d-none">Обработка <span id="current">1</span> из <span id="all"></span> </div>
                 </div>
             </div>
         @endforeach

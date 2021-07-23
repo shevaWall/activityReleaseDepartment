@@ -135,9 +135,9 @@ nav.mainNavBar .fixBorderRadius {
     cursor: pointer;
     background-color: ghostwhite;
 }
-.fieldForDropWrapper:hover{
+.fieldForDropWrapper:hover, .fieldForDropWrapper.hovered{
     border: 1px dotted black;
-    background-color:#0000006e;
+    background-color:#0000002e;
     color:white;
 }
 

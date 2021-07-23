@@ -1,26 +1,4 @@
 $(document).ready(function () {
-
-    // ajax добавление раздела (состава)
-    $('.ajaxSend').on('click', function (e) {
-        e.preventDefault();
-        let o_form = $(this).parents('form');
-
-        $.ajax({
-            type: $(o_form).attr('method'),
-            url: $(o_form).attr('action'), // ссылка на страницу с формой
-            data: $(o_form).serialize(),
-
-            success: function (msg) {
-                let tbody = $(o_form).find("tbody");
-                let lastTr = $(tbody).find('tr').last();
-
-                $(lastTr).before(msg);
-                $(o_form).find('input[name="name"]').val('');
-                recountPersents($(o_form).find('tbody'));
-            }
-        });
-    });
-
     // ajax поиск по названию объекта или по номеру заявки
     $("#searchObject").autocomplete({
         source: function (request, response) {
@@ -98,30 +76,30 @@ $(document).ready(function () {
     });
 });
 
-
-function dndDrop(element) {
+// обработчик события сброса файлов в браузер в зону сброса
+function dndDropMany(element, token) {
     stopPreventDef();
-
-    let input = $(element).siblings('input[type="file"]');
     let files = window.event.dataTransfer.files;
-
-    $(element).removeClass('highlight');
-    if (files.length > 1) {
-        $(element).text('Сюда можно загрузить только один файл! Отмена обработки.');
-    } else {
-        $(element).text('Обработка ...');
-        ajaxCountFormats(element, files[0]);
+    files = Object.entries(files);
+    if (files.length > 0){
+        $(element).find('.fieldForDropText').addClass('d-none');
+        $(element).find('.fieldForDropCount').removeClass('d-none');
+        $(element).find('.fieldForDropCount #current').text('1');
+        $(element).find('.fieldForDropCount #all').text(files.length);
+        ajaxCountFormats(element, files, token);
     }
 }
 
-function dndDropMany(element, token) {
-    stopPreventDef();
+// обработчик события наведения файлов в браузере в зону сброса
+function dndDragenter(element) {
+    // $(element).find('.fieldForDropText').addClass('invisible');
+    $(element).addClass('hovered');
+}
 
-    let files = window.event.dataTransfer.files;
-
-    if (files.length > 0) {
-        ajaxCountFormats(element, files, token);
-    }
+// обработчик обратного действия dndDragenter
+function dndDragleave(element) {
+    $(element).find('.fieldForDropText').removeClass('invisible');
+    $(element).removeClass('hovered');
 }
 
 // отменяет все действия по умолчанию для браузера при перемещении файлов в браузер
@@ -198,9 +176,8 @@ function recountPersents(compositGroup) {
 
 // аякс подсчет страниц pdf
 function ajaxCountFormats(element, files, token) {
-    let pause = false;
-    $.each(files, function (key, file) {
-        let fileName = file.name;
+    if(typeof files !== 'undefined' && files.length > 0) {
+        let fileName = files[0][1].name;
         let fileNameParts = fileName.split('.');
         let fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
         let newFileName = '';
@@ -234,7 +211,7 @@ function ajaxCountFormats(element, files, token) {
                     // подготавливаем данные для подсчета pdf
                     let pdfFormData = new FormData();
                     pdfFormData.append('_token', token);
-                    pdfFormData.append('pdf', file);
+                    pdfFormData.append('pdf', files[0][1]);
                     pdfFormData.append('composit_id', composit_id);
 
                     $.ajax({
@@ -262,6 +239,12 @@ function ajaxCountFormats(element, files, token) {
                                     $('#compositId_' + composit_id).find('.newTableHere').append(msg);
                                     // скрываем спиннер
                                     $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
+                                    files.shift();
+                                    if(files.length > 0){
+                                        // увеличиваем счетчик "обработка"
+                                        $(element).find('#current').text(parseInt($(element).find('#current').text())+1);
+                                    }
+                                    ajaxCountFormats(element, files, token);
                                 }
                             });
                         },
@@ -291,12 +274,14 @@ function ajaxCountFormats(element, files, token) {
                             }
                         }
                     });
-
-
                 }
             })
         }
-    });
+    }else{
+        $(element).find('.fieldForDropCount').addClass('d-none');
+        $(element).find('.fieldForDropText').removeClass('d-none');
+
+    }
 
     /*if (fileExtension === 'pdf') {
         $.ajax({
@@ -383,23 +368,6 @@ function ajaxCountFormats(element, files, token) {
             }
         });
     }*/
-}
-
-// ajax сбрасываем посчитанные страницы PDF у определенного раздела (состава)
-function ajaxCompositRefresh(element) {
-    let composit_id = parseInt($(element).parents('tr').attr('id').replace(/\D+/g, ""));
-    let tableTbody = $(element).parents('tr').find('.formatsTable tbody');
-
-    $.ajax({
-        type: 'get',
-        url: '/countPdf/ajaxDropCounted/' + composit_id,
-
-        success: function (msg) {
-            if ($(tableTbody).find('tr').length > 0) {
-                $(tableTbody).find('tr').remove();
-            }
-        }
-    });
 }
 
 // для переименовывания элемента
@@ -577,7 +545,6 @@ function deleteWarehouseItem(element) {
             $('.addCircleBtn').removeClass('d-none');
     }
 }
-
 
 // кнопка "показать итог" на странице сводной информации о количестве листов
 function showTotalPaperConsumption(element) {
