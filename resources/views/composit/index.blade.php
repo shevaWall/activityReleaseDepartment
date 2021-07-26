@@ -39,6 +39,9 @@
                     </tbody>
                 </table>
 
+                <ul id="placeForErrors">
+
+                </ul>
                 <div class="fieldForDropWrapper py-5"
                      data-object-id="{{$object->id}}"
                      data-composit-group-id="{{$compositGroup->id}}"

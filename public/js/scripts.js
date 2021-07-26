@@ -81,7 +81,7 @@ function dndDropMany(element, token) {
     stopPreventDef();
     let files = window.event.dataTransfer.files;
     files = Object.entries(files);
-    if (files.length > 0){
+    if (files.length > 0) {
         $(element).find('.fieldForDropText').addClass('d-none');
         $(element).find('.fieldForDropCount').removeClass('d-none');
         $(element).find('.fieldForDropCount #current').text('1');
@@ -176,7 +176,7 @@ function recountPersents(compositGroup) {
 
 // аякс подсчет страниц pdf
 function ajaxCountFormats(element, files, token) {
-    if(typeof files !== 'undefined' && files.length > 0) {
+    if (typeof files !== 'undefined' && files.length > 0) {
         let fileName = files[0][1].name;
         let fileNameParts = fileName.split('.');
         let fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
@@ -240,9 +240,9 @@ function ajaxCountFormats(element, files, token) {
                                     // скрываем спиннер
                                     $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
                                     files.shift();
-                                    if(files.length > 0){
+                                    if (files.length > 0) {
                                         // увеличиваем счетчик "обработка"
-                                        $(element).find('#current').text(parseInt($(element).find('#current').text())+1);
+                                        $(element).find('#current').text(parseInt($(element).find('#current').text()) + 1);
                                     }
                                     ajaxCountFormats(element, files, token);
                                 }
@@ -250,37 +250,49 @@ function ajaxCountFormats(element, files, token) {
                         },
                         error: function (msg) {
                             // console.log(msg.status);
-                            $('#response').html(msg.responseText);
+                            // $('#response').html(msg.responseText);
                             let badPdf_modal = new bootstrap.Modal(document.getElementById('badPdf_modal'));
 
                             // выключаем спиннер
                             $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
 
-                            if ($(error_pdf).hasClass('d-none')) {
-                                $(error_pdf).toggleClass('d-none');
-                                if (msg.status === 504) {
-                                    $(element).text('Для этого файла нужно больше времени на обработку. ' +
-                                        'Процесс всё ещё идёт в фоновом режиме. Попробуйте перезагрузить страницу позже.');
-                                } else {
-                                    $(element).text('Произошла ошибка');
-
-                                    // отображаем всплывашку ошибки
-                                    badPdf_modal.toggle();
-
-                                    badPdf_modal._element.addEventListener('hide.bs.modal', function (event) {
-                                        $('#response').html('');
-                                    });
+                            if (msg.status === 504) {
+                                $('#compositId_' + composit_id).find('.newTableHere').text('Для этого файла нужно больше времени на обработку. ' +
+                                    'Процесс всё ещё идёт в фоновом режиме. Попробуйте перезагрузить страницу позже.');
+                                files.shift();
+                                if (files.length > 0) {
+                                    // увеличиваем счетчик "обработка"
+                                    $(element).find('#current').text(parseInt($(element).find('#current').text()) + 1);
                                 }
+                                ajaxCountFormats(element, files, token);
+                            } else {
+                                let error = "<li>Произошла ошибка. Файл: "+fileName+". Попробуйте восстановить файл через <a href='https://www.ilovepdf.com/repair-pdf'>I Love Pdf <3</a></li>";
+                                $(element).siblings('ul').append(error);
+
+                                files.shift();
+                                if (files.length > 0) {
+                                    // увеличиваем счетчик "обработка"
+                                    $(element).find('#current').text(parseInt($(element).find('#current').text()) + 1);
+                                }
+                                ajaxCountFormats(element, files, token);
                             }
                         }
                     });
                 }
             })
+        }else{
+            let error = "<li>Не правильное расширение файла: "+fileName+"</li>";
+            $(element).siblings('ul').append(error);
+            files.shift();
+            if (files.length > 0) {
+                // увеличиваем счетчик "обработка"
+                $(element).find('#current').text(parseInt($(element).find('#current').text()) + 1);
+            }
+            ajaxCountFormats(element, files, token);
         }
-    }else{
+    } else {
         $(element).find('.fieldForDropCount').addClass('d-none');
         $(element).find('.fieldForDropText').removeClass('d-none');
-
     }
 
     /*if (fileExtension === 'pdf') {
