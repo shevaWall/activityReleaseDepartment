@@ -76,18 +76,107 @@ $(document).ready(function () {
     });
 });
 
+/*
+объявляем глобальную переменную, чтобы при цикличном вызове функции ajaxCoutFormats() для обработки файлов
+не получалось так, что один и тот же файл обрабатывается дважды, а общий массив файлов сокращался каждый раз на два
+файла сразу
+*/
+window.files = [];
 // обработчик события сброса файлов в браузер в зону сброса
 function dndDropMany(element, token) {
     stopPreventDef();
-    let files = window.event.dataTransfer.files;
-    files = Object.entries(files);
-    if (files.length > 0) {
+    const compositGroupId = $(element).data('composit-group-id');
+
+    window.files[compositGroupId] = Object.entries(window.event.dataTransfer.files);
+
+    if (window.files[compositGroupId].length > 0) {
         $(element).find('.fieldForDropText').addClass('d-none');
         $(element).find('.fieldForDropCount').removeClass('d-none');
         $(element).find('.fieldForDropCount #current').text('1');
-        $(element).find('.fieldForDropCount #all').text(files.length);
-        ajaxCountFormats(element, files, token);
+        $(element).find('.fieldForDropCount #all').text(window.files[compositGroupId].length);
+        // ajaxCountFormats(element, token);
+        checkCountFiles(element, token);
     }
+}
+
+// для одновременного запуска обработки двух файлов
+function checkCountFiles(element, token){
+    ajaxCountFormats(element, token)
+    if(window.files[$(element).data('composit-group-id')].length >= 2){
+        window.files[$(element).data('composit-group-id')].shift();
+        ajaxCountFormats(element, token);
+    }
+}
+
+// обработка события броска файла в браузер в зону сброса для уже имеющегося состава
+function dndReDrop(element, token) {
+    stopPreventDef();
+
+    let files = window.event.dataTransfer.files;
+    files = Object.entries(files);
+    let fileName = files[0][1].name;
+    let fileNameParts = fileName.split('.');
+    let fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
+    let composit_id = $(element).data('composit-id');
+
+    if (files.length === 1 && fileExtension === 'pdf') {
+        $.ajax({
+            // очищаем имеющиеся данные
+            url: '/countPdf/ajaxDropCounted/' + composit_id,
+            type: 'get',
+            success: function (msg) {
+                // подготавливаем данные для загрузки файла
+                let rePdfFormData = new FormData();
+                rePdfFormData.append('_token', token);
+                rePdfFormData.append('pdf', files[0][1]);
+                rePdfFormData.append('composit_id', composit_id);
+                $.ajax({
+                    url: '/countPdf/ajaxCountPdf/' + composit_id,
+                    dataType: 'text',
+                    cache: false,
+                    mimeType: "multipart/form-data",
+                    contentType: false,
+                    processData: false,
+                    data: rePdfFormData,
+                    type: 'post',
+                    beforeSend: function () {
+                        // отображаем спиннер
+                        $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
+                        // удаляем таблицу с форматами, для отображения новой таблицы из ajax ответа
+                        $('#compositId_' + composit_id).find('.newTableHere').find('table').remove();
+                    },
+                    success: function (msg) {
+                        // получаем новые обработанные данные страниц
+                        $.ajax({
+                            type: 'get',
+                            url: '/countPdf/ajaxGetCountedPdf/' + composit_id,
+                            success: function (msg) {
+                                // отображаем новые обработанные форматы страниц
+                                $('#compositId_' + composit_id).find('.newTableHere').append(msg);
+                                // скрываем спиннер
+                                $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
+                            }
+                        });
+                    },
+                    error: function (msg) {
+                        // выключаем спиннер
+                        $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
+
+                        if (msg.status === 504) {
+                            $('#compositId_' + composit_id).find('.newTableHere').text('Для этого файла нужно больше времени на обработку. ' +
+                                'Процесс всё ещё идёт в фоновом режиме. Попробуйте перезагрузить страницу позже.');
+                        } else {
+                            let error = "<li>Произошла ошибка. Файл: " + fileName + ". Попробуйте восстановить файл через <a href='https://www.ilovepdf.com/repair-pdf'>I Love Pdf <3</a></li>";
+                            $(element).siblings('ul').append(error);
+                        }
+                    }
+                });
+            }
+        });
+    } else {
+        $('#compositId_' + composit_id).find('.newTableHere').text('Убедитесь, что вы пытаетесь загрузить не более одного файла PDF!');
+    }
+    dndReDragleave($(element).find('.dropZone'));
 }
 
 // обработчик события наведения файлов в браузере в зону сброса
@@ -96,10 +185,31 @@ function dndDragenter(element) {
     $(element).addClass('hovered');
 }
 
+// обработчик события наведения файла в браузере в зону сброса для уже имеющегося состава
+function dndReDragenter(element) {
+    let a_td = $(element).children('td');
+    $.each($(a_td), function (k, v) {
+        if (!$(v).hasClass('d-none'))
+            $(v).addClass('d-none');
+        if ($(v).hasClass('dropZone'))
+            $(v).removeClass('d-none');
+    });
+}
+
 // обработчик обратного действия dndDragenter
 function dndDragleave(element) {
     $(element).find('.fieldForDropText').removeClass('invisible');
     $(element).removeClass('hovered');
+}
+
+// обработчик обратного действия dndReDragenter
+function dndReDragleave(element) {
+    let a_td = $(element).siblings('td');
+    $.each($(a_td), function (k, v) {
+        if (!$(v).hasClass('renameComposit'))
+            $(v).removeClass('d-none');
+    });
+    $(element).addClass('d-none');
 }
 
 // отменяет все действия по умолчанию для браузера при перемещении файлов в браузер
@@ -175,9 +285,12 @@ function recountPersents(compositGroup) {
 }
 
 // аякс подсчет страниц pdf
-function ajaxCountFormats(element, files, token) {
-    if (typeof files !== 'undefined' && files.length > 0) {
-        let fileName = files[0][1].name;
+function ajaxCountFormats(element, token) {
+    let compositGroupId = $(element).data('composit-group-id');
+    if (typeof window.files !== 'undefined' && window.files[compositGroupId].length > 0) {
+
+        let file = window.files[compositGroupId][0][1];
+        let fileName = file.name;
         let fileNameParts = fileName.split('.');
         let fileExtension = fileNameParts[fileNameParts.length - 1].toLowerCase();
         let newFileName = '';
@@ -186,9 +299,8 @@ function ajaxCountFormats(element, files, token) {
 
         if (fileExtension === 'pdf') {
             // объединяем части от имени файла в одну переменную, но без расширения файла
-            for (let i = 0; i < fileNameParts.length - 1; i++) {
+            for (let i = 0; i < fileNameParts.length - 1; i++)
                 newFileName += fileNameParts[i];
-            }
 
             // подготавливаем данные для создания состава (раздела)
             let compositFormData = new FormData();
@@ -211,7 +323,7 @@ function ajaxCountFormats(element, files, token) {
                     // подготавливаем данные для подсчета pdf
                     let pdfFormData = new FormData();
                     pdfFormData.append('_token', token);
-                    pdfFormData.append('pdf', files[0][1]);
+                    pdfFormData.append('pdf', file);
                     pdfFormData.append('composit_id', composit_id);
 
                     $.ajax({
@@ -230,7 +342,7 @@ function ajaxCountFormats(element, files, token) {
                             $('#compositId_' + composit_id).find('.newTableHere').find('table').remove();
                         },
                         success: function (msg) {
-                            // получаем новые обработанные данные страниц
+                            // получаем только что обработанные данные страниц
                             $.ajax({
                                 type: 'get',
                                 url: '/countPdf/ajaxGetCountedPdf/' + composit_id,
@@ -239,19 +351,19 @@ function ajaxCountFormats(element, files, token) {
                                     $('#compositId_' + composit_id).find('.newTableHere').append(msg);
                                     // скрываем спиннер
                                     $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
-                                    files.shift();
-                                    if (files.length > 0) {
+
+                                    window.files[compositGroupId].shift();
+                                    if (window.files[compositGroupId].length > 0) {
                                         // увеличиваем счетчик "обработка"
                                         $(element).find('#current').text(parseInt($(element).find('#current').text()) + 1);
                                     }
-                                    ajaxCountFormats(element, files, token);
+                                    ajaxCountFormats(element, token);
                                 }
                             });
                         },
                         error: function (msg) {
                             // console.log(msg.status);
                             // $('#response').html(msg.responseText);
-                            let badPdf_modal = new bootstrap.Modal(document.getElementById('badPdf_modal'));
 
                             // выключаем спиннер
                             $('#compositId_' + composit_id).find('.spinner-border').toggleClass('d-none');
@@ -259,127 +371,34 @@ function ajaxCountFormats(element, files, token) {
                             if (msg.status === 504) {
                                 $('#compositId_' + composit_id).find('.newTableHere').text('Для этого файла нужно больше времени на обработку. ' +
                                     'Процесс всё ещё идёт в фоновом режиме. Попробуйте перезагрузить страницу позже.');
-                                files.shift();
-                                if (files.length > 0) {
-                                    // увеличиваем счетчик "обработка"
-                                    $(element).find('#current').text(parseInt($(element).find('#current').text()) + 1);
-                                }
-                                ajaxCountFormats(element, files, token);
                             } else {
-                                let error = "<li>Произошла ошибка. Файл: "+fileName+". Попробуйте восстановить файл через <a href='https://www.ilovepdf.com/repair-pdf'>I Love Pdf <3</a></li>";
+                                let error = "<li>Произошла ошибка. Файл: " + fileName + ". Попробуйте восстановить файл через <a href='https://www.ilovepdf.com/repair-pdf'>I Love Pdf <3</a></li>";
                                 $(element).siblings('ul').append(error);
-
-                                files.shift();
-                                if (files.length > 0) {
-                                    // увеличиваем счетчик "обработка"
-                                    $(element).find('#current').text(parseInt($(element).find('#current').text()) + 1);
-                                }
-                                ajaxCountFormats(element, files, token);
                             }
+                            window.files[compositGroupId].shift();
+                            if (window.files[compositGroupId].length > 0) {
+                                // увеличиваем счетчик "обработка"
+                                $(element).find('#current').text(parseInt($(element).find('#current').text()) + 1);
+                            }
+                            ajaxCountFormats(element, token);
                         }
                     });
                 }
             })
-        }else{
-            let error = "<li>Не правильное расширение файла: "+fileName+"</li>";
+        } else {
+            let error = "<li>Не правильное расширение файла: " + fileName + "</li>";
             $(element).siblings('ul').append(error);
-            files.shift();
-            if (files.length > 0) {
+            window.files[compositGroupId].shift();
+            if (window.files[compositGroupId].length > 0) {
                 // увеличиваем счетчик "обработка"
                 $(element).find('#current').text(parseInt($(element).find('#current').text()) + 1);
             }
-            ajaxCountFormats(element, files, token);
+            ajaxCountFormats(element, token);
         }
     } else {
         $(element).find('.fieldForDropCount').addClass('d-none');
         $(element).find('.fieldForDropText').removeClass('d-none');
     }
-
-    /*if (fileExtension === 'pdf') {
-        $.ajax({
-            url: '/countPdf/ajaxCountPdf/' + composit_id,
-            dataType: 'text',
-            cache: false,
-            mimeType: "multipart/form-data",
-            contentType: false,
-            processData: false,
-            data: form_data,
-            type: 'post',
-            beforeSend: function () {
-                // очищаем поле с таблицей под новые данные
-                $(element).parents('tr').find('.formatsTable').remove();
-                // показываем спиннер, чтобы было видно, что процесс идёт
-                $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
-                // если до этого срабатывал флаг на ошибку загрузки файла, то прячем его
-                if (!$(error_pdf).hasClass('d-none')) {
-                    $(error_pdf).toggleClass('d-none');
-                }
-            },
-            success: function (msg) {
-                // сбрасываем скрытый input для загрузки файлов (если файл был загружен через проводник)
-                $(element).siblings('input[type="file"]').val('');
-
-                // получаем новые обработанные данные страниц
-                $.ajax({
-                    type: 'get',
-                    url: '/countPdf/ajaxGetCountedPdf/' + composit_id,
-                    success: function (msg) {
-                        // отображаем новые обработанные форматы страниц
-                        $(element).parents('tr').find('.newTableHere').append(msg);
-                        // выключаем спиннер
-                        $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
-                        // возвращаем надпись в DnD блоке в исходное состояние
-                        $(element).text('Успешно!');
-                    },
-                    error: function (msg) {
-                        $('#response').append(msg);
-                    }
-                });
-            },
-            error: function (msg) {
-                // console.log(msg.status);
-                $('#response').html(msg.responseText);
-                let badPdf_modal = new bootstrap.Modal(document.getElementById('badPdf_modal'));
-
-                // сбрасываем скрытый input для загрузки файлов (если файл был загружен через проводник)
-                $(element).siblings('input[type="file"]').val('');
-                // выключаем спиннер
-                $(element).parents('tr').find('.spinner-border').toggleClass('d-none');
-
-                if ($(error_pdf).hasClass('d-none')) {
-                    $(error_pdf).toggleClass('d-none');
-                    if (msg.status === 504) {
-                        $(element).text('Для этого файла нужно больше времени на обработку. ' +
-                            'Процесс всё ещё идёт в фоновом режиме. Попробуйте перезагрузить страницу позже.');
-                    } else {
-                        $(element).text('Произошла ошибка');
-
-                        // отображаем всплывашку ошибки
-                        badPdf_modal.toggle();
-
-                        badPdf_modal._element.addEventListener('hide.bs.modal', function (event) {
-                            $('#response').html('');
-                        });
-                    }
-                }
-            }
-        });
-    } else {
-        $.ajax({
-            type: 'get',
-            url: '/countPdf/ajaxBadExtension',
-
-            success: function (msg) {
-                // console.log(msg);
-                $('#response').html(msg);
-                let badPdfExtension = new bootstrap.Modal(document.getElementById('badPdfExtension'));
-                badPdfExtension.toggle();
-                badPdfExtension._element.addEventListener('hide.bs.modal', function (event) {
-                    $('#response').html('');
-                });
-            }
-        });
-    }*/
 }
 
 // для переименовывания элемента

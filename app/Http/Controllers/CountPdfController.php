@@ -309,14 +309,6 @@ class CountPdfController extends Controller
     }
 
     /**
-     * заглушка для не правильного расширения файла
-     */
-    public function ajaxBadExtension(){
-        return view('errors.badPdfExtension');
-    }
-
-
-    /**
      * для дебага
      */
     public function test(){

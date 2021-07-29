@@ -141,5 +141,16 @@ nav.mainNavBar .fixBorderRadius {
     color:white;
 }
 
+.dropZone{
+    height: 100px;
+    background-color: #0000002e!important;
+    vertical-align: middle;
+    border: 1px dotted;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    color:white;
+}
+
 
 
