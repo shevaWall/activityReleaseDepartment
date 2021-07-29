@@ -145,7 +145,7 @@ Route::group([
  */
 Route::group([
 //    'middleware'=>  '',
-    'prefix' => 'countPdf',
+'prefix' => 'countPdf',
     'as' => 'countPdf.',
 ], function () {
     // аякс загрузка файла и инициализация рассчетов форматов
@@ -160,11 +160,8 @@ Route::group([
     Route::get("clearAll/{ajaxDropCounted}", [CountPdfController::class, "clearAll"])
         ->name('clearAll');
 
-    // очищает список подсчитанных форматов у определенного раздела (состава)
+    // аякс очищает список подсчитанных форматов у определенного раздела (состава)
     Route::get("ajaxDropCounted/{Composit}", [CountPdfController::class, "ajaxDropCounted"]);
-
-    // вывод заглушки о неправильном расширении файла
-    Route::get("ajaxBadExtension", [CountPdfController::class, "ajaxBadExtension"]);
 
     // для дебага
     Route::get("test", [CountPdfController::class, "test"]);

@@ -8,9 +8,9 @@
     </thead>
     <tbody>
             @if(!is_null($composit->formats))
-                @foreach($composit->formats->formats as $k=>$format)
+                @foreach($composit->formats->formats as $formatName=>$format)
                 <tr>
-                    <td>{{$k}}</td>
+                    <td>{{$formatName}}</td>
                     <td>
                         @if(isset($format->Colored))
                             {{$format->Colored}}

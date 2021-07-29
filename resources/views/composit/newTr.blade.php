@@ -1,5 +1,15 @@
-<tr id="compositId_{{$composit->id}}">
+<tr id="compositId_{{$composit->id}}" data-composit-id="{{$composit->id}}"
+    ondrop="dndReDrop(this, '{{csrf_token()}}')"
+    ondragover="stopPreventDef()"
+    ondragenter="dndReDragenter(this)"
+    @class([
+        'bg-warning' => !isset($composit->formats)
+    ])
+    >
     <th scope="row"></th>
+    <td class="dropZone text-center d-none"
+        colspan="10"
+        ondragleave="dndReDragleave(this)">Отпусти файл</td>
     <td ondblclick="dblclick_renameComposit(this)" class="cursorRenameComposit">{{$composit->name}}</td>
     <td class="renameComposit d-none">
         <input type="text" value="{{$composit->name}}">
@@ -11,18 +21,6 @@
             {{$composit->completed}}
         </p>
     </td>
-    <td>
-        <p class="ajaxDeleteComposit pointer"
-           onclick="ajaxCompositRefresh(this)">
-            <img src="/images/restore.svg" alt="Сбросить" title="Сбросить"/>
-        </p>
-    </td>
-    <td>
-        <p class="ajaxDeleteComposit pointer"
-           onclick="ajaxDeleteComposit(this)">
-            <img src="/images/trash.svg" alt="Удалить" title="Удалить"/>
-        </p>
-    </td>
     <td class="newTableHere">
         @include('composit.formatsTable')
         <div class="text-center">
@@ -30,25 +28,11 @@
                 <span class="visually-hidden">Загрузка...</span>
             </div>
         </div>
-        <div class="text-center error_pdf d-none">
-                <span>ошибка</span>
-        </div>
     </td>
-    <td class="col-4 align-middle">
-        <input class="d-none"
-               id="countPdf_{{$composit->id}}"
-               type="file"
-               name="pdf"
-               accept=".pdf"
-               onchange="ajaxCountFormats($(this).siblings('#dropZone_{{$composit->id}}'), $(this).prop('files')[0])">
-        <div id="dropZone_{{$composit->id}}"
-             class="py-5 text-center"
-             onclick="openFileExplorer(this)"
-             ondragenter="dndDragenter(this)"
-             ondragleave="dndDragleave(this)"
-             ondrop="dndDrop(this)"
-             ondragover="stopPreventDef()">
-            Для загрузки, перетащите файл сюда или нажмите здесь.
-        </div>
+    <td>
+        <p class="ajaxDeleteComposit pointer"
+           onclick="ajaxDeleteComposit(this)">
+            <img src="/images/trash.svg" alt="Удалить" title="Удалить"/>
+        </p>
     </td>
 </tr>
