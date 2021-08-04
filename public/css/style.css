@@ -38,10 +38,6 @@ p.completed {
     content: counter(compositCounter);
 }
 
-.cursorRenameComposit {
-    cursor: context-menu;
-}
-
 .renameComposit {
     position: relative;
 }

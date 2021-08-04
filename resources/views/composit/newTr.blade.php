@@ -10,7 +10,7 @@
     <td class="dropZone text-center d-none"
         colspan="10"
         ondragleave="dndReDragleave(this)">Отпусти файл</td>
-    <td ondblclick="dblclick_renameComposit(this)" class="cursorRenameComposit">{{$composit->name}}</td>
+    <td ondblclick="dblclick_renameComposit(this)" class="cursorRenameComposit pointer">{{$composit->name}}</td>
     <td class="renameComposit d-none">
         <input type="text" value="{{$composit->name}}">
         <span class="completeRenaming" onclick="completeRenameComposit(this)"></span>
