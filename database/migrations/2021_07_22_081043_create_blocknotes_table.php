@@ -15,7 +15,7 @@ class CreateBlocknotesTable extends Migration
     {
         Schema::create('blocknotes', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->tinyText('name');
             $table->timestamps();
         });
     }
