@@ -195,4 +195,5 @@ Route::group([
 ], function () {
     Route::post("addNote", [BlocknotesController::class, "ajaxAddNote"]);
     Route::post('deleteNote', [BlocknotesController::class, "ajaxDeleteNote"]);
+    Route::post('changeOrdersId', [BlocknotesController::class, "ajaxChangeOrdersId"]);
 });

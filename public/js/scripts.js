@@ -74,6 +74,15 @@ $(document).ready(function () {
             });
         }
     });
+
+    // jQuery UI sortable для заметок на главной странице
+    $('#note_sortable').sortable({
+        placeholder: "ui-state-highlight",
+        update: function (event, ui) {
+            ajaxChangeBlocknotesNoteOrder(ui.item[0]);
+        },
+    });
+    $("#sortable").disableSelection();
 });
 
 /*
@@ -82,6 +91,7 @@ $(document).ready(function () {
 файла сразу
 */
 window.files = [];
+
 // обработчик события сброса файлов в браузер в зону сброса
 function dndDropMany(element, token) {
     stopPreventDef();
@@ -100,9 +110,9 @@ function dndDropMany(element, token) {
 }
 
 // для одновременного запуска обработки двух файлов
-function checkCountFiles(element, token){
+function checkCountFiles(element, token) {
     ajaxCountFormats(element, token)
-    if(window.files[$(element).data('composit-group-id')].length >= 2){
+    if (window.files[$(element).data('composit-group-id')].length >= 2) {
         window.files[$(element).data('composit-group-id')].shift();
         ajaxCountFormats(element, token);
     }
@@ -607,4 +617,43 @@ function ajaxDeleteNote(note_id, token) {
             $('.notes').find(".row[data-note-id=" + note_id + "]").remove();
         }
     });
+}
+
+// ajax обновление order_id у заметок
+function ajaxChangeBlocknotesNoteOrder(element) {
+    let a_notes = $('.note-list').find('.row');
+    let curOrderIdPosition = $.inArray(element, a_notes);
+    let updateOrderIdFormData = new FormData();
+
+    // напрямую меняем у перетянутого элемента его order_id
+    if(curOrderIdPosition - 1 == 0 || curOrderIdPosition == 0){
+        $(element).attr('data-order-id', 1);
+    }else{
+        $(element).attr('data-order-id', parseInt($(a_notes[curOrderIdPosition-1]).attr('data-order-id')) + 1);
+    }
+    updateOrderIdFormData.append($(element).data('note-id'), $(element).attr('data-order-id'));
+
+    curOrderIdPosition++;
+    for (curOrderIdPosition; curOrderIdPosition < $(a_notes).length; curOrderIdPosition++) {
+        $(a_notes[curOrderIdPosition]).attr('data-order-id', parseInt($(a_notes[curOrderIdPosition - 1]).attr('data-order-id')) + 1);
+        updateOrderIdFormData.append($(a_notes[curOrderIdPosition]).data('note-id'), parseInt($(a_notes[curOrderIdPosition]).attr('data-order-id')));
+    }
+
+    updateOrderIdFormData.append('_token', $('#notesForm').find('input[name="_token"]').val());
+    $.ajax({
+        url: '/blocknotes/changeOrdersId/',
+        dataType: 'text',
+        cache: false,
+        mimeType: "multipart/form-data",
+        contentType: false,
+        processData: false,
+        data: updateOrderIdFormData,
+        type: 'post',
+        success: function (msg) {
+            /*console.log(msg);
+            $('.response').append(msg);*/
+        }
+
+    });
+
 }

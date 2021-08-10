@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Blocknotes;
 use App\Models\PrintableObject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class IndexPageController extends Controller
 {
@@ -14,7 +15,7 @@ class IndexPageController extends Controller
             ->take(5)
             ->get();
 
-        $notes = Blocknotes::all();
+        $notes = Blocknotes::all()->sortBy('order_id');
 
         return view('index')
             ->with('latestObjects', $latestObjects)

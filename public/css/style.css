@@ -105,11 +105,11 @@ nav.mainNavBar .fixBorderRadius {
     position: relative;
 }
 
-.bg-note:hover .deleteNote{
-    display:block;
+.bg-note:hover .deleteNote {
+    display: block;
 }
 
-.bg-note .deleteNote{
+.bg-note .deleteNote {
     width: 17px;
     height: 17px;
     position: absolute;
@@ -121,32 +121,35 @@ nav.mainNavBar .fixBorderRadius {
     line-height: 1.2;
     text-align: center;
     border-radius: 15px;
-    display:none;
+    display: none;
 }
 
-.fieldForDropWrapper{
+.fieldForDropWrapper {
     font-size: 24px;
     border: 1px dashed black;
     border-radius: 10px;
     cursor: pointer;
     background-color: ghostwhite;
 }
-.fieldForDropWrapper:hover, .fieldForDropWrapper.hovered{
+
+.fieldForDropWrapper:hover, .fieldForDropWrapper.hovered {
     border: 1px dotted black;
-    background-color:#0000002e;
-    color:white;
+    background-color: #0000002e;
+    color: white;
 }
 
-.dropZone{
+.dropZone {
     height: 100px;
-    background-color: #0000002e!important;
+    background-color: #0000002e !important;
     vertical-align: middle;
     border: 1px dotted;
     border-radius: 10px;
     cursor: pointer;
     font-size: 24px;
-    color:white;
+    color: white;
 }
 
-
-
+.ui-state-highlight {
+    height: 1.5em;
+    line-height: 1.2em;
+}

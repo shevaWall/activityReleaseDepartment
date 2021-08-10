@@ -27,13 +27,14 @@
                     @endif
                 </div>
             </div>
+            <div class="response"></div>
         </div>
         <div class="col-6 notes py-5">
             <div class="row card text-dark">
                 <div class="card-body">
                     <h5 class="card-title text-center">Заметки</h5>
                     @if(isset($notes) && count($notes) > 0)
-                        <div class="note-list">
+                        <div class="note-list" id="note_sortable">
                             @foreach($notes as $note)
                                 @include('blocknotes.newBlock', $note)
                             @endforeach
