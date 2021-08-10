@@ -33,15 +33,15 @@
             <div class="row card text-dark">
                 <div class="card-body">
                     <h5 class="card-title text-center">Заметки</h5>
-                    @if(isset($notes) && count($notes) > 0)
-                        <div class="note-list" id="note_sortable">
+                    <div class="note-list" id="note_sortable">
+                        @if(isset($notes) && count($notes) > 0)
                             @foreach($notes as $note)
                                 @include('blocknotes.newBlock', $note)
                             @endforeach
-                        </div>
-                    @else
-                        <div class="text-center">Пока здесь нет записей</div>
-                    @endif
+                        @else
+                            <div class="text-center hideThenAddNote">Пока здесь нет записей</div>
+                        @endif
+                    </div>
                     <form action="/" method="post" id="notesForm" class="mt-3">
                         @csrf
                         <div class="col-12 text-center">

@@ -70,6 +70,8 @@ $(document).ready(function () {
                 success: function (newNote) {
                     $('#notesForm').find('textarea').val('');
                     $('.note-list').append(newNote);
+                    if(!$('.hideThenAddNote').hasClass('d-none'))
+                        $('.hideThenAddNote').addClass('d-none');
                 }
             });
         }
@@ -633,6 +635,7 @@ function ajaxChangeBlocknotesNoteOrder(element) {
     }
     updateOrderIdFormData.append($(element).data('note-id'), $(element).attr('data-order-id'));
 
+    // делаем всё тоже самое для всех заметок находящихся ниже, чем перетянутая
     curOrderIdPosition++;
     for (curOrderIdPosition; curOrderIdPosition < $(a_notes).length; curOrderIdPosition++) {
         $(a_notes[curOrderIdPosition]).attr('data-order-id', parseInt($(a_notes[curOrderIdPosition - 1]).attr('data-order-id')) + 1);
