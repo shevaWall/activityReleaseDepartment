@@ -628,7 +628,7 @@ function ajaxChangeBlocknotesNoteOrder(element) {
     let updateOrderIdFormData = new FormData();
 
     // напрямую меняем у перетянутого элемента его order_id
-    if(curOrderIdPosition - 1 == 0 || curOrderIdPosition == 0){
+    if(curOrderIdPosition - 1 < 0 || curOrderIdPosition === 0){
         $(element).attr('data-order-id', 1);
     }else{
         $(element).attr('data-order-id', parseInt($(a_notes[curOrderIdPosition-1]).attr('data-order-id')) + 1);
