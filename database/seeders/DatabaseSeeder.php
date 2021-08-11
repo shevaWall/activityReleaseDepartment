@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Blocknotes;
+use App\Models\WarehouseTransactions;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -17,6 +19,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CompositGroupSeeder::class,
             StatusSeeder::class,
+            BlocknotesSeeder::class,
+            PrintableObjectSeeder::class,
+            CompositSeeder::class,
+            CountPdfsSeeder::class,
+            WarehouseSeeder::class,
         ]);
     }
 }

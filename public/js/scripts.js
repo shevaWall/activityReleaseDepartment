@@ -283,7 +283,7 @@ function ajaxCompositChangeStatus(composit) {
     });
 }
 
-// перерасчет процентного соотношения выполненой печати для группы разделов
+// перерасчет процентного соотношения выполненной печати для группы разделов
 function recountPersents(compositGroup) {
     let compositGroupId = parseInt($(compositGroup).attr('id').replace(/\D+/g, ""));
     let uncompletedComposits = $(compositGroup).find('p.uncompleted').length;
