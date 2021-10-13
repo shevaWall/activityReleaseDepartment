@@ -138,6 +138,8 @@ Route::group([
         ->name('ajaxChangeCompositStatus');
 
     Route::post('ajaxRenameComposit/{Composit}', [CompositController::class, "ajaxRenameComposit"]);
+
+    Route::post("ajaxChangeCompositOrderIndex", [CompositController::class, "ajaxChangeCompositOrderIndex"]);
 });
 
 /**

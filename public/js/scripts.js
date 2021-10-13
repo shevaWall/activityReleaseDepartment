@@ -56,7 +56,7 @@ $(document).ready(function () {
         // перенос строки
         if (e.key == 'Enter' && !e.shiftKey) {
             let form_data = new FormData();
-            form_data.append('_token', $('#notesForm').find("input[name='_token']").val());
+            form_data.append('_token', $('meta[name="csrf-token"]').attr('content'));
             form_data.append('name', $("#notesForm").find('textarea').val());
 
             $.ajax({
@@ -70,7 +70,7 @@ $(document).ready(function () {
                 success: function (newNote) {
                     $('#notesForm').find('textarea').val('');
                     $('.note-list').append(newNote);
-                    if(!$('.hideThenAddNote').hasClass('d-none'))
+                    if (!$('.hideThenAddNote').hasClass('d-none'))
                         $('.hideThenAddNote').addClass('d-none');
                 }
             });
@@ -417,6 +417,18 @@ function ajaxCountFormats(element, token) {
 function dblclick_renameComposit(element) {
     let inpt = $(element).siblings('.renameComposit');
     $([element, inpt]).toggleClass('d-none');
+    $(inpt).find('input').focus();
+    $(inpt).find('input')[0].selectionStart = $(inpt).find('input').val().length;
+}
+
+function checkEnterOrEsc(element) {
+    if (event.key === 'Enter')
+        completeRenameComposit(element);
+    if (event.key === 'Escape') {
+        $(element).val($(element).parents('td').siblings('.cursorRenameComposit').text());
+        dblclick_renameComposit($(element).parents('td').siblings('.cursorRenameComposit'));
+    }
+
 }
 
 function completeRenameComposit(element) {
@@ -429,7 +441,7 @@ function completeRenameComposit(element) {
 
     let form_data = new FormData();
     form_data.append('name', $(inpt).find('input').val());
-    form_data.append('_token', $(element).parents('form').find("input[name='_token']").val());
+    form_data.append('_token', $('meta[name="csrf-token"]').attr('content'));
 
     $.ajax({
         type: 'post',
@@ -447,13 +459,13 @@ function completeRenameComposit(element) {
     });
 }
 
-// редактирование материала актуального склада
+// редактирование материала актуального склада (тут же autocomplete для названия материалов)
 function editWarehouseItem(element) {
     let row = $(element).parents('tr');
     let warehouseId = $(row).attr('data-warehouse-item');
     let a_warehouseText = $(row).find('.warehouse-text');
     let a_inputs = $(row).find('input');
-    let token = $(element).parents('tbody').find("input[name='_token']").val();
+    let token = $('meta[name="csrf-token"]').attr('content');
     let changedFlag = false;
     let notEmptyField = true;
 
@@ -628,10 +640,10 @@ function ajaxChangeBlocknotesNoteOrder(element) {
     let updateOrderIdFormData = new FormData();
 
     // напрямую меняем у перетянутого элемента его order_id
-    if(curOrderIdPosition - 1 < 0 || curOrderIdPosition === 0){
+    if (curOrderIdPosition - 1 < 0 || curOrderIdPosition === 0) {
         $(element).attr('data-order-id', 1);
-    }else{
-        $(element).attr('data-order-id', parseInt($(a_notes[curOrderIdPosition-1]).attr('data-order-id')) + 1);
+    } else {
+        $(element).attr('data-order-id', parseInt($(a_notes[curOrderIdPosition - 1]).attr('data-order-id')) + 1);
     }
     updateOrderIdFormData.append($(element).data('note-id'), $(element).attr('data-order-id'));
 
@@ -642,7 +654,7 @@ function ajaxChangeBlocknotesNoteOrder(element) {
         updateOrderIdFormData.append($(a_notes[curOrderIdPosition]).data('note-id'), parseInt($(a_notes[curOrderIdPosition]).attr('data-order-id')));
     }
 
-    updateOrderIdFormData.append('_token', $('#notesForm').find('input[name="_token"]').val());
+    updateOrderIdFormData.append('_token', $('meta[name="csrf-token"]').attr('content'));
     $.ajax({
         url: '/blocknotes/changeOrdersId/',
         dataType: 'text',
@@ -657,6 +669,51 @@ function ajaxChangeBlocknotesNoteOrder(element) {
             $('.response').append(msg);*/
         }
 
+    });
+
+}
+
+// ajax обновление order_index у составов
+function ajaxChangeCompositsOrder(element) {
+    let a_compositList = $(element).parents('tbody').children('tr');
+    let elementTr = $(element).parents('tr');
+    let curElementInCompositList = $.inArray(elementTr[0], a_compositList);
+    let direction = !!$(element).hasClass('liftUp');
+
+    // меняем у перемещенного состава его order_index
+    // true - двигаем наверх
+    // false - двигаем вниз
+    let differentComposit;
+    if (direction) {
+        differentComposit = a_compositList[curElementInCompositList - 1];
+    } else {
+        differentComposit = a_compositList[curElementInCompositList + 1];
+    }
+    let diffCompositOrderIndex = $(differentComposit).attr('data-composit-order-index');
+    $(differentComposit).attr('data-composit-order-index', elementTr.attr('data-composit-order-index'));
+    $(elementTr).attr('data-composit-order-index', diffCompositOrderIndex);
+    if (direction) {
+        $(elementTr).after($(differentComposit));
+    } else {
+        $(elementTr).before($(differentComposit));
+    }
+
+    let compositUpdateOrderIndexForm = new FormData();
+    compositUpdateOrderIndexForm.append('first', $(elementTr).attr('data-composit-id'));
+    compositUpdateOrderIndexForm.append('second', $(differentComposit).attr('data-composit-id'));
+    compositUpdateOrderIndexForm.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+    $.ajax({
+        url: '/composit/ajaxChangeCompositOrderIndex',
+        dataType: 'text',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: compositUpdateOrderIndexForm,
+        type: 'post',
+        success: function (msg) {
+            console.log('ok');
+        }
     });
 
 }

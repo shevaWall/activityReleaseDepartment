@@ -34,8 +34,22 @@ p.completed {
     counter-increment: compositCounter;
 }
 
-.numeratedTable tbody > tr th:before {
+.numeratedTable tbody > tr th > .indexOrder:before {
     content: counter(compositCounter);
+}
+
+.numeratedTable tbody > tr:first-child .liftUp{
+    display:none;
+}
+.numeratedTable tbody > tr:last-child .liftDown{
+    display:none;
+}
+
+.liftUp:hover, .liftDown:hover{
+    box-shadow: 0 1px 5px 0;
+}
+.liftUp, .liftDown{
+    font-size: 20px;
 }
 
 .renameComposit {

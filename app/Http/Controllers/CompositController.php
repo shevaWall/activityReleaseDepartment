@@ -19,7 +19,7 @@ class CompositController extends Controller
     public function index(PrintableObject $PrintableObject)
     {
         $compositGroups = CompositGroup::all();
-        $composits = Composit::where('object_id', $PrintableObject->id)->with('printableObject')->with('formats')->get();
+        $composits = Composit::where('object_id', $PrintableObject->id)->orderBy('order_index')->with('printableObject')->with('formats')->get();
         $persents = $this->persent($composits, $compositGroups);
 
         return view('composit.index')
@@ -41,6 +41,8 @@ class CompositController extends Controller
         $req = $request->all();
         $req['completed'] = 0;
         $addedComposit = Composit::create($req);
+        $addedComposit->order_index = $addedComposit->id;
+        $addedComposit->save();
         return view('composit.newTr')
             ->with('composit', $addedComposit);
     }
@@ -105,6 +107,22 @@ class CompositController extends Controller
     public function ajaxRenameComposit(Request $r, Composit $Composit)
     {
         $Composit->update($r->all());
+    }
+
+    /**
+     * аякс изменение порядка при выводе составов проекта(объекта)
+     * @param Request $r
+     */
+    public function ajaxChangeCompositOrderIndex(Request $r){
+        $r = $r->all();
+        $f_composit = Composit::findOrFail($r['first']);
+        $s_composit = Composit::findOrFail($r['second']);
+
+        $buffer = $f_composit->order_index;
+        $f_composit->order_index = $s_composit->order_index;
+        $f_composit->save();
+        $s_composit->order_index = $buffer;
+        $s_composit->save();
     }
 
 }
