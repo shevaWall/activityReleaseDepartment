@@ -29,4 +29,9 @@ class BlocknotesController extends Controller
             }
         DB::commit();
     }
+
+    // ajax изменение текста заметки
+    public function ajaxChangeNoteName(Request $r, Blocknotes $Blocknotes){
+        $Blocknotes->update($r->all());
+    }
 }

@@ -48,7 +48,6 @@ Route::group([
         });
 
     // выводит заявки по статусам (в работе, на паузе, сданы, удалены, все)
-    // todo: придумать как сделать роут
     Route::get("withStatus/{Status}", [PrintableObjectController::class, "withStatus"])
         ->name('withStatus')
         ->breadcrumbs(function (Trail $trail, Status $Status) {
@@ -190,6 +189,7 @@ Route::group([
     Route::get("ajaxMoreTransaction/{WarehouseTransactions}", [WarehouseTransactionsController::class, "ajaxMoreTransaction"]);
 });
 
+// роуты для работы с заметками
 Route::group([
 //    'middleware'=>  '',
     'prefix' => 'blocknotes',
@@ -198,4 +198,5 @@ Route::group([
     Route::post("addNote", [BlocknotesController::class, "ajaxAddNote"]);
     Route::post('deleteNote', [BlocknotesController::class, "ajaxDeleteNote"]);
     Route::post('changeOrdersId', [BlocknotesController::class, "ajaxChangeOrdersId"]);
+    Route::post('changeNoteName/{Blocknotes}', [BlocknotesController::class, "ajaxChangeNoteName"]);
 });

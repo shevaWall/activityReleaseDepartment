@@ -167,3 +167,7 @@ nav.mainNavBar .fixBorderRadius {
     height: 1.5em;
     line-height: 1.2em;
 }
+
+.noteText{
+    white-space: pre-line;
+}

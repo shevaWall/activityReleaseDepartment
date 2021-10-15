@@ -452,7 +452,6 @@ function completeRenameComposit(element) {
         contentType: false,
         processData: false,
         data: form_data,
-
         success: function (msg) {
             // console.log(msg);
         }
@@ -716,4 +715,36 @@ function ajaxChangeCompositsOrder(element) {
         }
     });
 
+}
+
+// отображение поля для редактирования заметки
+function toggleChangeBlockNoteText(wrapper){
+    $(wrapper).find('.noteText').toggleClass('d-none');
+    $(wrapper).find('.textareaNoteText').toggleClass('d-none');
+    $(wrapper).find('.noteBtns').toggleClass('d-none');
+}
+
+// зафиксировать внесенные изменения в заметке
+function ajaxChangeBlockNoteText(btn){
+    let newNoteText = $(btn).parents('.noteBtns').siblings('textarea').val();
+    let noteId = $(btn).parents('.pointer').data('note-id');
+    let noteFormData = new FormData();
+
+    noteFormData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+    noteFormData.append('name', newNoteText);
+
+    $.ajax({
+        url: '/blocknotes/changeNoteName/'+noteId,
+        dataType: 'text',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: noteFormData,
+        type: 'post',
+        success: function (msg) {
+            // console.log('ok');
+            toggleChangeBlockNoteText($(btn).parents('.note-text-wrapper'));
+            $(btn).parents('.noteBtns').siblings('.noteText').text(newNoteText);
+        }
+    });
 }
