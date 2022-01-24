@@ -13,18 +13,6 @@ use App\Models\Status;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-
 Route::get("/", [IndexPageController::class, "index"])
     ->name('index')
     ->breadcrumbs(function (Trail $trail) {
@@ -103,6 +91,9 @@ Route::group([
 
 });
 
+/**
+ * роуты для работы поиска по объектам
+ */
 Route::group([
 //    'middleware'=>  '',
     'prefix' => 'search',
@@ -168,28 +159,9 @@ Route::group([
     Route::get("test", [CountPdfController::class, "test"]);
 });
 
-Route::group([
-//    'middleware'=>  '',
-    'prefix' => 'warehouse',
-    'as' => 'warehouse.',
-], function () {
-    Route::get("/", [WarehouseController::class, "index"])
-        ->name('index')
-        ->breadcrumbs(function (Trail $trail) {
-            return $trail->parent('index')
-                ->push('Склад', route('warehouse.index'));
-        });
-
-    Route::any("updateWarehouseActualData", [WarehouseController::class, "ajaxUpdateWarehouseActualData"])
-        ->name('updateWarehouseActualData');
-
-    Route::get("ajaxAddNewTr", [WarehouseController::class, "ajaxAddNewTr"]);
-    Route::get("ajaxDeleteItem/{Warehouse}", [WarehouseController::class, "ajaxDeleteItem"]);
-
-    Route::get("ajaxMoreTransaction/{WarehouseTransactions}", [WarehouseTransactionsController::class, "ajaxMoreTransaction"]);
-});
-
-// роуты для работы с заметками
+/**
+ * роуты для работы с заметками
+ * */
 Route::group([
 //    'middleware'=>  '',
     'prefix' => 'blocknotes',
