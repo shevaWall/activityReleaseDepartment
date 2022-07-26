@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\DB;
 
 class IndexPageController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         $latestObjects = PrintableObject::where('status_id', '!=', '4')
             ->orderBy('created_at', 'desc')
             ->take(5)
