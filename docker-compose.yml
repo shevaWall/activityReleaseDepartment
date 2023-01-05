@@ -26,14 +26,6 @@ services:
     volumes:
       - ./docker/mariadb/dbdata:/var/lib/mysql
 
-  #phpmyadmin:
-  #  image: library/phpmyadmin:fpm-alpine
-  #  restart: always
-  #  ports:
-  #    - 8080:80
-  #  environment:
-  #    - PMA_ARBITRARY=1
-
   nginx:
     image: library/nginx:alpine
     restart: always
