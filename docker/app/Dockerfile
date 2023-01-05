@@ -1,4 +1,4 @@
-FROM library/php:7.4.16-fpm
+FROM library/php:8.0.2-fpm
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
@@ -52,6 +52,3 @@ USER www
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
 CMD ["php-fpm"]
-
-#RUN usermod -u 1000 www-data
-#RUN chown -R www-data:www-data /var/www
