@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Blocknotes;
 
+use App\Http\Controllers\Controller;
 use App\Models\Blocknotes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

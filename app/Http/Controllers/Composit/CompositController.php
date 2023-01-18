@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Composit;
 
+use App\Http\Controllers\Controller;
 use App\Models\Composit;
 use App\Models\CompositGroup;
 use App\Models\CountPdf;
 use App\Models\PrintableObject;
 use Illuminate\Http\Request;
-use PHPUnit\Framework\Constraint\Count;
 
 class CompositController extends Controller
 {
@@ -74,7 +74,7 @@ class CompositController extends Controller
      * @param object $compositGroups - объект с группами разделов
      * @return array
      */
-    private final function persent(object $composits, object $compositGroups)
+    private function persent(object $composits, object $compositGroups)
     {
         $groupPersents = [];
 

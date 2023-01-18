@@ -1,7 +1,32 @@
-body {
-    background-color: #ebebeb;
+body *{
+    font-family: 'Open Sans',Arial,sans-serif;
+}
+body a{
+    color: #000000;
 }
 
+.blueWrapper{
+    border: 3px solid #0056d3;
+}
+
+nav.navbar a{
+    font-size: 16px;
+}
+nav.navbar a:hover{
+    color: #000000;
+}
+
+
+
+
+
+
+
+
+
+
+
+/*old styles*/
 tbody[id^="compositGroup_"] img {
     width: 25px;
 }
